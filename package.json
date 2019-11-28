@@ -1,42 +1,63 @@
 {
-	"name": "wdio-helper",
-	"displayName": "WDIO Helper",
-	"description": "A tool to help analyze WDIO test results",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.40.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:extension.helloWorld"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.7",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.40.0",
-		"glob": "^7.1.5",
-		"mocha": "^6.2.2",
-		"typescript": "^3.6.4",
-		"tslint": "^5.20.0",
-		"vscode-test": "^1.2.2"
-	}
+  "name": "terra-wdio-helper",
+  "displayName": "Terra WDIO Helper",
+  "description": "A tool to help analyze Terra WDIO test results",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.18.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.helloWorld",
+        "title": "Hello World"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Terra WDIO Helper",
+        "properties": {
+          "terraWdioHelper.wdioTestFolderRelativePath": {
+            "type": "string",
+            "default": "tests/wdio",
+            "description": "Path to the WDIO test folder relative to the workspace root. This folder must contain a __snapshots__ directory."
+          }
+        }
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "terraWdioHelper",
+          "name": "Terra WDIO Helper"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "lint:ts": "tslint -p ."
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.40.0",
+    "glob": "^7.1.5",
+    "mocha": "^6.2.2",
+    "tslint": "^5.20.0",
+    "typescript": "^3.7.2",
+    "vscode-test": "^1.2.2"
+  }
 }
