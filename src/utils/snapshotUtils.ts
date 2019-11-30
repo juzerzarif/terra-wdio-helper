@@ -1,8 +1,9 @@
 import * as fs  from 'fs';
 import * as path from 'path';
-import { Uri, workspace } from "vscode";
+import * as rimraf from 'rimraf';
+import { Uri, window, workspace } from "vscode";
 
-import { SpecResource } from "../models/interfaces";
+import { SnapshotResource, SpecResource } from "../models/interfaces";
 import WdioSnapshot from "../models/wdioSnapshot";
 import WdioSpec from "../models/wdioSpec";
 
@@ -50,4 +51,46 @@ export function getAllSnapshots(spec: WdioSpec): Array<WdioSnapshot> {
   });
 
   return wdioSnapshots;
+}
+
+/**
+ * Delete all images associated with a snapshot
+ * @param snapshot - The snapshot to delete images for
+ */
+export function deleteSnapshot(snapshot: WdioSnapshot): void {
+  const resources: SnapshotResource[] = snapshot.resources;
+  resources.forEach((resource: SnapshotResource): void => {
+    try {
+      if (pathExists(resource.referenceUri.fsPath)) {
+        rimraf.sync(resource.referenceUri.fsPath);
+      }
+      if (pathExists(resource.latestUri.fsPath)) {
+        rimraf.sync(resource.latestUri.fsPath);
+      }
+      if (pathExists(resource.diffUri.fsPath)) {
+        rimraf.sync(resource.diffUri.fsPath);
+      }
+    } catch (err) {
+      console.log(err);
+      window.showErrorMessage(err);
+    }
+  });
+}
+
+/**
+ * Delete all diffs associated with a snapshot
+ * @param snapshot - The snapshot to delete diffs for
+ */
+export function deleteDiffSnapshots(snapshot: WdioSnapshot): void {
+  const resources: SnapshotResource[] = snapshot.resources;
+  resources.forEach((resource: SnapshotResource): void => {
+    try {
+      if (pathExists(resource.diffUri.fsPath)) {
+        rimraf.sync(resource.diffUri.fsPath);
+      }
+    } catch (err) {
+      console.log(err);
+      window.showErrorMessage(err);
+    }
+  });
 }

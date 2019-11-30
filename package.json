@@ -16,8 +16,40 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
+        "command": "terraWdioHelper.displaySnapshot",
+        "title": "Open Snapshot"
+      },
+      {
+        "command": "terraWdioHelper.deleteSnapshot",
+        "title": "Delete Snapshot",
+        "icon": {
+          "dark": "resources/images/delete_icon_dark.svg",
+          "light": "resources/images/delete_icon_light.svg"
+        }
+      },
+      {
+        "command": "terraWdioHelper.deleteDiffSnapshot",
+        "title": "Delete diffs"
+      },
+      {
+        "command": "terraWdioHelper.deleteSpec",
+        "title": "Delete Spec",
+        "icon": {
+          "dark": "resources/images/delete_icon_dark.svg",
+          "light": "resources/images/delete_icon_light.svg"
+        }
+      },
+      {
+        "command": "terraWdioHelper.deleteDiffSpec",
+        "title": "Delete diffs"
+      },
+      {
+        "command": "terraWdioHelper.refreshSnapshotTree",
+        "title": "Refresh",
+        "icon": {
+          "dark": "resources/images/refresh_icon_dark.svg",
+          "light": "resources/images/refresh_icon_light.svg"
+        }
       }
     ],
     "configuration": [
@@ -32,6 +64,35 @@
         }
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "terraWdioHelper.refreshSnapshotTree",
+          "when": "view == terraWdioHelper",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "terraWdioHelper.deleteSnapshot",
+          "when": "view == terraWdioHelper && viewItem == wdioSnapshot",
+          "group": "inline"
+        },
+        {
+          "command": "terraWdioHelper.deleteDiffSnapshot",
+          "when": "view == terraWdioHelper && viewItem == wdioSnapshot"
+        },
+        {
+          "command": "terraWdioHelper.deleteSpec",
+          "when": "view == terraWdioHelper && viewItem == wdioSpec",
+          "group": "inline"
+        },
+        {
+          "command": "terraWdioHelper.deleteDiffSpec",
+          "when": "view == terraWdioHelper && viewItem == wdioSpec"
+        }
+      ]
+    },
     "views": {
       "explorer": [
         {
@@ -53,11 +114,15 @@
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.11.7",
+    "@types/rimraf": "^2.0.3",
     "@types/vscode": "^1.40.0",
     "glob": "^7.1.5",
     "mocha": "^6.2.2",
     "tslint": "^5.20.0",
     "typescript": "^3.7.2",
     "vscode-test": "^1.2.2"
+  },
+  "dependencies": {
+    "rimraf": "^3.0.0"
   }
 }

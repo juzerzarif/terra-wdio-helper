@@ -1,15 +1,19 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as fs from "fs";
 import * as path from "path";
-import { FileSystemWatcher, RelativePattern, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, Disposable, ExtensionContext, FileSystemWatcher, window, workspace, WorkspaceFolder } from "vscode";
 
-import { pathExists } from "./utils/common";
+import { SnapshotWebviewOptions } from "./models/interfaces";
+import WdioSnapshot from "./models/wdioSnapshot";
+import WdioSpec from "./models/wdioSpec";
+import { deleteDiffSnapshots, deleteSnapshot } from "./utils/snapshotUtils";
+import { deleteDiffSpecs, deleteSpec } from "./utils/specUtils";
+import WdioSnapshotPanel from "./WdioSnapshotPanel";
 import WdioSnapshotTreeProvider from "./WdioSnapshotTreeProvider";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate() {
+export function activate(context: ExtensionContext) {
   const initialRootPath: WorkspaceFolder | undefined = workspace.workspaceFolders && workspace.workspaceFolders[0];
 
   activateWdioTree(initialRootPath);
@@ -21,13 +25,45 @@ export function activate() {
   function activateWdioTree(rootPath: WorkspaceFolder | undefined): void {
     const treeProvider: WdioSnapshotTreeProvider = new WdioSnapshotTreeProvider(rootPath ? rootPath.uri.fsPath : undefined);
     window.registerTreeDataProvider("terraWdioHelper", treeProvider);
+    const displaySnapshotDisposable: Disposable = commands.registerCommand(
+      'terraWdioHelper.displaySnapshot',
+      (snapshot: SnapshotWebviewOptions): void => WdioSnapshotPanel.createOrShow(snapshot)
+    );
+    const deleteSnapshotDisposable: Disposable = commands.registerCommand(
+      'terraWdioHelper.deleteSnapshot',
+      (snapshot: WdioSnapshot): void => deleteSnapshot(snapshot)
+    );
+    const deleteDiffSnapshotDisposable: Disposable = commands.registerCommand(
+      'terraWdioHelper.deleteDiffSnapshot',
+      (snapshot: WdioSnapshot): void => deleteDiffSnapshots(snapshot)
+    );
+    const deleteSpecDisposable: Disposable = commands.registerCommand(
+      'terraWdioHelper.deleteSpec',
+      (spec: WdioSpec): void => deleteSpec(spec)
+    );
+    const deleteDiffSpecDisposable: Disposable = commands.registerCommand(
+      'terraWdioHelper.deleteDiffSpec',
+      (spec: WdioSpec): void => deleteDiffSpecs(spec)
+    );
+    const refreshTreeDisposable: Disposable = commands.registerCommand(
+      'terraWdioHelper.refreshSnapshotTree',
+      (): void => treeProvider.refresh()
+    );
 
     if (rootPath) {
       const fileSystemWatcher: FileSystemWatcher = workspace.createFileSystemWatcher(path.join(rootPath.uri.fsPath, '**').replace(/\\/g, '/'));
-      fileSystemWatcher.onDidChange(() => treeProvider.refresh());
-      fileSystemWatcher.onDidDelete(() => treeProvider.refresh());
-      fileSystemWatcher.onDidCreate(() => treeProvider.refresh());
+      fileSystemWatcher.onDidChange(() => treeProvider.refresh(), null, context.subscriptions);
+      fileSystemWatcher.onDidDelete(() => treeProvider.refresh(), null, context.subscriptions);
+      fileSystemWatcher.onDidCreate(() => treeProvider.refresh(), null, context.subscriptions);
     }
+
+    context.subscriptions.push(
+      displaySnapshotDisposable,
+      deleteSnapshotDisposable,
+      deleteDiffSnapshotDisposable,
+      deleteSpecDisposable,
+      deleteDiffSpecDisposable,
+      refreshTreeDisposable);
   }
 }
 

@@ -1,7 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
-import { TreeItemCollapsibleState, window, workspace } from "vscode";
+import * as rimraf from "rimraf";
+import { TreeItemCollapsibleState, window, workspace, WorkspaceFolder } from "vscode";
 
+import { SpecResource } from "../models/interfaces";
 import WdioSpec from "../models/wdioSpec";
 
 import { pathExists } from "./common";
@@ -51,4 +53,64 @@ export function getAllSpecs(testFolderPath: string): Array<WdioSpec> {
   }
 
   return [];
+}
+
+/**
+ * Delete all snapshots associated with the given spec
+ * @param spec - The spec to delete all snapshots for 
+ */
+export function deleteSpec(spec: WdioSpec): void {
+  const resources: SpecResource[] = spec.resources;
+  const workspaceRoot: WorkspaceFolder | undefined = workspace.workspaceFolders && workspace.workspaceFolders[0];
+  const testFolderPath: string | undefined = workspace.getConfiguration("terraWdioHelper").get("wdioTestFolderRelativePath");
+  if (!workspaceRoot || !testFolderPath || typeof testFolderPath !== 'string') { return; }
+  
+  const specBasePath: string = path.join(workspaceRoot.uri.fsPath, testFolderPath, '__snapshots__');
+
+  resources.forEach((resource: SpecResource): void => {
+    const referenceSpecPath: string = path.join(specBasePath, 'reference', resource.locale, resource.viewport, spec.label);
+    const latestSpecPath: string = path.join(specBasePath, 'latest', resource.locale, resource.viewport, spec.label);
+    const diffSpecPath: string = path.join(specBasePath, 'diff', resource.locale, resource.viewport, spec.label);
+
+    try {
+      if (pathExists(referenceSpecPath)) {
+        rimraf.sync(referenceSpecPath);
+      }
+      if (pathExists(latestSpecPath)) {
+        rimraf.sync(latestSpecPath);
+      }
+      if (pathExists(diffSpecPath)) {
+        rimraf.sync(diffSpecPath);
+      }
+    } catch (err) {
+      console.log(err);
+      window.showErrorMessage(err);
+    }
+  });
+}
+
+/**
+ * Delete all diff snapshots associated with a spec
+ * @param spec - The spec to delete all diff snapshots for
+ */
+export function deleteDiffSpecs(spec: WdioSpec): void {
+  const resources: SpecResource[] = spec.resources;
+  const workspaceRoot: WorkspaceFolder | undefined = workspace.workspaceFolders && workspace.workspaceFolders[0];
+  const testFolderPath: string | undefined = workspace.getConfiguration("terraWdioHelper").get("wdioTestFolderRelativePath");
+  if (!workspaceRoot || !testFolderPath || typeof testFolderPath !== 'string') { return; }
+
+  const specBasePath: string = path.join(workspaceRoot.uri.fsPath, testFolderPath, '__snapshots__', 'diff');
+
+  resources.forEach((resource: SpecResource): void => {
+    const diffSpecPath: string = path.join(specBasePath, resource.locale, resource.viewport, spec.label);
+
+    try {
+      if (pathExists(diffSpecPath)) {
+        rimraf.sync(diffSpecPath);
+      }
+    } catch (err) {
+      console.log(err);
+      window.showErrorMessage(err);
+    }
+  });
 }
