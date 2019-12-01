@@ -1,3 +1,19 @@
+const vscode = acquireVsCodeApi();
+
+function updateActiveTab(resourceId, type) {
+  const state = vscode.getState();
+  const i = state.activeTabs.findIndex(activeTab => activeTab.resourceId === resourceId);
+  state.activeTabs[i].type = type;
+  vscode.setState(state);
+}
+
+function updateActiveDiff(resourceId, type) {
+  const state = vscode.getState();
+  const i = state.activeDiffs.findIndex(activeDiff => activeDiff.resourceId === resourceId);
+  state.activeDiffs[i].type = type;
+  vscode.setState(state);
+}
+
 function toggleResourceDisplay(resourceId, snapshotType) {
   const snapshotIds = [`${resourceId}_reference`, `${resourceId}_latest`, `${resourceId}_diff`];
   const tabIds = [`${resourceId}_reference_tab`, `${resourceId}_latest_tab`, `${resourceId}_diff_tab`];
@@ -8,6 +24,7 @@ function toggleResourceDisplay(resourceId, snapshotType) {
   tabIds.forEach(id => document.getElementById(id).classList.remove('active'));
   document.getElementById(clickedSnapshot).classList.add('active');
   document.getElementById(clickedTab).classList.add('active');
+  updateActiveTab(resourceId, snapshotType);
 
   const sliderContainer = document.getElementById(`${resourceId}_diff_slide`);
   if(snapshotType === 'diff' && sliderContainer && sliderContainer.classList.contains('active')) {
@@ -25,6 +42,7 @@ function toggleDiffDisplay(resourceId, diffType) {
   buttonIds.forEach(id => document.getElementById(id).classList.remove('active'));
   document.getElementById(clickedDiff).classList.add('active');
   document.getElementById(clickedButton).classList.add('active');
+  updateActiveDiff(resourceId, diffType);
 
   if (diffType === 'slide') {
     setTimeout(() => initSliderControl(resourceId), 0);
@@ -71,3 +89,12 @@ for (let i = 0; i < onionDiffBoxes.length; i++) {
   })
   setOpacity(imageContainer, 50);
 }
+
+document.getElementsByClassName('snapshot-container')[0].addEventListener('scroll', (event) => {
+  const left = event.target.scrollLeft;
+  const top = event.target.scrollTop;
+  const state = vscode.getState();
+  state.scrollPosition.left = left;
+  state.scrollPosition.top = top;
+  vscode.setState(state);
+})

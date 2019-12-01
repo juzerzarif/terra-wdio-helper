@@ -43,6 +43,7 @@ export interface StartFragmentOptions {
 export interface EndFragmentOptions {
   indexJsUri: Uri;
   beerSliderJsUri: Uri;
+  persistenceJsUri: Uri;
   nonce: string;
 }
 

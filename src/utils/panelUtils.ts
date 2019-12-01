@@ -43,6 +43,7 @@ const getStartFragment = (options: StartFragmentOptions): string => {
 
 const getEndFragment = (options: EndFragmentOptions): string => {
   const indexJsUri: Uri = options.indexJsUri;
+  const persistenceJsUri: Uri = options.persistenceJsUri;
   const beerSliderJsUri: Uri = options.beerSliderJsUri;
   const nonce: string = options.nonce;
 
@@ -51,6 +52,7 @@ const getEndFragment = (options: EndFragmentOptions): string => {
       </div>
       <script nonce="${nonce}" src="${beerSliderJsUri}"></script>
       <script nonce="${nonce}" src="${indexJsUri}"></script>
+      <script nonce="${nonce}" src="${persistenceJsUri}"></script>
     </body>
   </html>
   `;
@@ -175,10 +177,11 @@ const createHtmlForSnapshot = (snapshot: SnapshotWebviewOptions, webview: Webvie
   const beerSliderCssPath = webview.asWebviewUri(Uri.file(path.join(__filename, "..", "..", "..", 'resources', 'stylesheets', 'BeerSlider.css')));
   const indexJsPath = webview.asWebviewUri(Uri.file(path.join(__filename, "..", "..", "..", 'resources', 'js', 'index.js')));
   const beerSliderJsPath = webview.asWebviewUri(Uri.file(path.join(__filename, "..", "..", "..", 'resources', 'js', 'BeerSlider.js')));
+  const persistenceJsPath = webview.asWebviewUri(Uri.file(path.join(__filename, "..", "..", "..", 'resources', 'js', 'webviewPersistence.js')));
   const nonce: string = generateNonce();
 
   const start: string = getStartFragment({title: snapshot.title, indexCssUri: indexCssPath, beerSliderCssUri: beerSliderCssPath, nonce: nonce});
-  const end: string = getEndFragment({indexJsUri: indexJsPath, beerSliderJsUri: beerSliderJsPath, nonce: nonce});
+  const end: string = getEndFragment({indexJsUri: indexJsPath, beerSliderJsUri: beerSliderJsPath, persistenceJsUri: persistenceJsPath, nonce: nonce});
 
   let accumulator = start;
   snapshot.resources.forEach((resource: SnapshotResource): void => {
