@@ -136,6 +136,7 @@ img {
 .slide-latest {
   display: flex;
   align-items: center;
+  border-right: 2px solid #000;
 }
 
 .diff-onion.active {

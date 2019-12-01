@@ -54,7 +54,7 @@ class WdioSnapshotPanel {
 
     this._update(); // initial render
 
-    this._panel.onDidDispose(this.dispose, null, this._disposables);
+    this._panel.onDidDispose(this.dispose, this, this._disposables);
 
     const testFolderPath: string = path.join(snapshot.resources[0].referenceUri.fsPath, "..", "..", "..", "..", "**");
     const fileSystemWatcher: FileSystemWatcher = workspace.createFileSystemWatcher(testFolderPath.replace(/\\/g, '/'));
