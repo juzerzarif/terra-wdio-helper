@@ -2,13 +2,33 @@
   "name": "terra-wdio-helper",
   "displayName": "Terra WDIO Helper",
   "description": "A tool to help analyze Terra WDIO test results",
-  "version": "0.0.1",
+  "icon": "resources/images/extensionIcon.png",
+  "version": "1.0.0",
+  "publisher": "juzerzarif",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juzerzarif/terra-wdio-helper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/juzerzarif/terra-wdio-helper/issues",
+    "email": "juzerapj@gmail.com"
+  },
+  "author": {
+    "name": "Juzer Zarif",
+    "url": "https://juzerzarif.com"
+  },
+  "homepage": "https://github.com/juzerzarif/terra-wdio-helper/blob/master/README.md",
   "engines": {
-    "vscode": "^1.18.0"
+    "vscode": "^1.38.0"
   },
   "categories": [
     "Other"
   ],
+  "galleryBanner": {
+    "color": "#EC4F1F",
+    "theme": "dark"
+  },
   "activationEvents": [
     "*"
   ],
@@ -115,7 +135,7 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.11.7",
     "@types/rimraf": "^2.0.3",
-    "@types/vscode": "^1.40.0",
+    "@types/vscode": "^1.38.0",
     "glob": "^7.1.5",
     "mocha": "^6.2.2",
     "tslint": "^5.20.0",
