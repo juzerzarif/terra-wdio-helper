@@ -78,6 +78,15 @@ img {
   max-width: 100%;
 }
 
+.fallback-icon {
+  height: 10rem;
+  width: 10rem;
+}
+
+.fallback-icon path {
+  fill: var(--vscode-icon-foreground);
+}
+
 .diff-image-container {
   height: 40rem;
   display: flex;

@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "bundle_extension",
+      "type": "npm",
+      "script": "build:development",
+      "problemMatcher": "$ts-webpack",
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated"
+      },
+      "group": "build"
+    },
+    {
+      "label": "bundle_resources",
+      "type": "npm",
+      "script": "bundle:resources",
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated"
+      },
+      "group": "build"
+    },
+    {
+      "label": "bundle_all",
+      "dependsOn": [
+        "bundle_extension",
+        "bundle_resources"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

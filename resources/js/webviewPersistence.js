@@ -21,7 +21,7 @@ const getInitialActiveDiffs = () => {
     const resourceId = buttonId.match(/(.+)_diff_default_button/)[1];
     initialActiveDiffs.push({
       resourceId: resourceId,
-      type: 'default'
+      type: 'two-up'
     });
   }
 

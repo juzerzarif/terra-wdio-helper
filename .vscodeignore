@@ -1,10 +1,15 @@
 .vscode/**
 .vscode-test/**
-out/test/**
+out/**
 src/**
+resources/js
+resources/stylesheets
+node_modules
 .gitignore
-vsc-extension-quickstart.md
 **/tsconfig.json
 **/tslint.json
+**/webpack.config.json
 **/*.map
 **/*.ts
+**/gulpfile.js
+**/package-lock.json

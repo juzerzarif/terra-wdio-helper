@@ -32,8 +32,7 @@ export interface SnapshotWebviewOptions {
  */
 export interface StartFragmentOptions {
   title: string;
-  indexCssUri: Uri;
-  beerSliderCssUri: Uri;
+  stylesheetUri: Uri;
   nonce: string;
 }
 
@@ -41,9 +40,7 @@ export interface StartFragmentOptions {
  * Param options for HTML content's ending fragment
  */
 export interface EndFragmentOptions {
-  indexJsUri: Uri;
-  beerSliderJsUri: Uri;
-  persistenceJsUri: Uri;
+  scriptUri: Uri;
   nonce: string;
 }
 

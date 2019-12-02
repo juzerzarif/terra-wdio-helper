@@ -25,6 +25,6 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-### 1.0.0
+### 0.1.0
 
-Initial release of terra-wdio-helper
+Initial development release of terra-wdio-helper

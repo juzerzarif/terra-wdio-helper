@@ -10,10 +10,12 @@ import { deleteDiffSnapshots, deleteSnapshot } from "./utils/snapshotUtils";
 import { deleteDiffSpecs, deleteSpec } from "./utils/specUtils";
 import WdioSnapshotPanel from "./WdioSnapshotPanel";
 import WdioSnapshotTreeProvider from "./WdioSnapshotTreeProvider";
+import ContextStore from "./models/ContextStore";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
+  ContextStore.storeContext(context);
   const initialRootPath: WorkspaceFolder | undefined = workspace.workspaceFolders && workspace.workspaceFolders[0];
 
   activateWdioTree(initialRootPath);
