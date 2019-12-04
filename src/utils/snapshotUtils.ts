@@ -8,7 +8,7 @@ import ResourceRetriever from '../models/ResourceRetriever';
 import WdioSnapshot from "../models/wdioSnapshot";
 import WdioSpec from "../models/wdioSpec";
 
-import { pathExists } from "./common";
+import { isDirEmpty, pathExists } from "./common";
 
 /**
  * Gets all the snapshots associated with the given spec under all locales and viewports 
@@ -79,6 +79,10 @@ export function deleteSnapshot(snapshot: WdioSnapshot): void {
       }
       if (pathExists(resource.diffUri.fsPath)) {
         rimraf.sync(resource.diffUri.fsPath);
+        const snapshotDirectory: string = path.join(resource.diffUri.fsPath, '..');
+        if (isDirEmpty(snapshotDirectory)) {
+          rimraf.sync(snapshotDirectory);
+        }
       }
     } catch (err) {
       console.log(err);
@@ -97,6 +101,10 @@ export function deleteDiffSnapshots(snapshot: WdioSnapshot): void {
     try {
       if (pathExists(resource.diffUri.fsPath)) {
         rimraf.sync(resource.diffUri.fsPath);
+        const snapshotDirectory: string = path.join(resource.diffUri.fsPath, '..');
+        if (isDirEmpty(snapshotDirectory)) {
+          rimraf.sync(snapshotDirectory);
+        }
       }
     } catch (err) {
       console.log(err);

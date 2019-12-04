@@ -14,4 +14,21 @@ function pathExists(path: string): boolean {
   return true;
 }
 
-export { pathExists };
+/**
+ * Check if the directory at the given path is empty
+ * @param path - An fs path
+ * @returns true if directory is empty, false otherwise
+ * @throws If path is inaccessible on disk or path is not a directory
+ */
+function isDirEmpty(path: string): boolean {
+  if (!fs.existsSync(path)) {
+    throw new Error(`${path} does not exist on disk`);
+  }
+  if (!fs.lstatSync(path).isDirectory()) {
+    throw new Error(`${path} is not a path to a directory`);
+  }
+  const files: string[] = fs.readdirSync(path);
+  return !files.length;
+}
+
+export { pathExists, isDirEmpty };
