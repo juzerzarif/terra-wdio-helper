@@ -10,21 +10,16 @@ This extension aggregates all snapshots under a spec across all locales and view
 
 It also adds the ability to batch delete snapshots and diffs for a spec and a test:
 
-![Batch delete snapshots](docs/batch_delete.png)
-![Batch delete snapshot diffs](docs/batch_delete_diff.png)
+![Batch delete snapshots](docs/batch_delete.png) ![Batch delete snapshot diffs](docs/batch_delete_diff.png)
 
 ## Requirements
 
 Must utilize terra-toolkit's WDIO configuration and helpers to provide the snapshot directory structure expected by the extension.
+
+Minimum required version of VSCode: 1.38.0
 
 ## Extension Settings
 
 This extension contributes the following settings:
 
 * `terraWdioHelper.wdioTestFolderRelativePath`: Path to the WDIO test folder relative to the workspace root
-
-## Release Notes
-
-### 0.1.0
-
-Initial development release of terra-wdio-helper
