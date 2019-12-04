@@ -2,7 +2,15 @@ import * as path from 'path';
 import { ExtensionContext, Uri, Webview, workspace } from "vscode";
 
 import ContextStore from '../models/ContextStore';
-import { DiffFragmentOptions, EndFragmentOptions, LatestFragmentOptions, ReferenceFragmentOptions, SnapshotResource, SnapshotWebviewOptions, StartFragmentOptions } from '../models/interfaces';
+import {
+  DiffFragmentOptions,
+  EndFragmentOptions,
+  LatestFragmentOptions,
+  ReferenceFragmentOptions,
+  SnapshotResource,
+  SnapshotWebviewOptions,
+  StartFragmentOptions
+} from '../models/interfaces';
 
 import { pathExists } from './common';
 
@@ -147,7 +155,10 @@ const getDiffFragment = (options: DiffFragmentOptions, webview: Webview): string
 }; 
 
 const getResourceContainer = (resource: SnapshotResource, webview: Webview): string => {
-  const header: string = `${resource.locale} | ${resource.viewport}`;
+  let header: string = `${resource.locale} | ${resource.viewport}`;
+  if (pathExists(resource.diffUri.fsPath)) {
+    header = `🔴 ${header}`;
+  }
   const resourceId: string = `${resource.locale}_${resource.viewport.replace('_', '-')}`;
   const start: string = `
   <div class="resource-container">

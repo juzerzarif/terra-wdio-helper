@@ -11,7 +11,6 @@ import {
 } from "vscode";
 
 import { SnapshotWebviewOptions } from './models/interfaces';
-import WdioSnapshot from "./models/wdioSnapshot";
 import { createHtmlForSnapshot } from './utils/panelUtils';
 
 class WdioSnapshotPanel {

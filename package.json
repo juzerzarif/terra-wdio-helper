@@ -43,8 +43,8 @@
         "command": "terraWdioHelper.deleteSnapshot",
         "title": "Delete Snapshot",
         "icon": {
-          "dark": "resources/images/delete_icon_dark.svg",
-          "light": "resources/images/delete_icon_light.svg"
+          "dark": "resources/images/dark/delete_icon.svg",
+          "light": "resources/images/light/delete_icon.svg"
         }
       },
       {
@@ -55,8 +55,8 @@
         "command": "terraWdioHelper.deleteSpec",
         "title": "Delete Spec",
         "icon": {
-          "dark": "resources/images/delete_icon_dark.svg",
-          "light": "resources/images/delete_icon_light.svg"
+          "dark": "resources/images/dark/delete_icon.svg",
+          "light": "resources/images/light/delete_icon.svg"
         }
       },
       {
@@ -67,8 +67,8 @@
         "command": "terraWdioHelper.refreshSnapshotTree",
         "title": "Refresh",
         "icon": {
-          "dark": "resources/images/refresh_icon_dark.svg",
-          "light": "resources/images/refresh_icon_light.svg"
+          "dark": "resources/images/dark/refresh_icon.svg",
+          "light": "resources/images/light/refresh_icon.svg"
         }
       }
     ],
@@ -123,7 +123,7 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run build:prod && npm run bundle:resources",
+    "vscode:prepublish": "npm run lint:ts && npm run build:prod && npm run bundle:resources",
     "build:development": "webpack --mode development",
     "build:development:watch": "webpack --mode development --watch",
     "build:prod": "webpack --mode production",

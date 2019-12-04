@@ -3,7 +3,9 @@ import * as path from "path";
 import * as rimraf from "rimraf";
 import { TreeItemCollapsibleState, window, workspace, WorkspaceFolder } from "vscode";
 
+import { Themes } from "../models/enums";
 import { SpecResource } from "../models/interfaces";
+import ResourceRetriever from "../models/ResourceRetriever";
 import WdioSpec from "../models/wdioSpec";
 
 import { pathExists } from "./common";
@@ -30,18 +32,25 @@ export function getAllSpecs(testFolderPath: string): Array<WdioSpec> {
             const specFolders: Array<string> = fs.readdirSync(viewportPath);
 
             specFolders.forEach(specFolder => {
-              const i = specs.findIndex(spec => spec.label === specFolder);
+              const i: number = specs.findIndex(spec => spec.label === specFolder);
+              const isDiffPresent: boolean = pathExists(path.join(testFolderPath, '..', 'diff', locale, viewport, specFolder));
+              const diffIconPath = {
+                light: ResourceRetriever.getFolderDiffIconPath(Themes.LIGHT),
+                dark: ResourceRetriever.getFolderDiffIconPath(Themes.DARK)
+              };
+
               if (i >= 0) {
                 specs[i].resources.push({ viewport: viewport, locale: locale });
+                if (isDiffPresent) { specs[i].iconPath = diffIconPath; }
               } else {
-                specs.push(
-                  new WdioSpec(specFolder, TreeItemCollapsibleState.Collapsed, [
-                    {
-                      viewport: viewport,
-                      locale: locale
-                    }
-                  ])
-                );
+                const newSpec: WdioSpec = new WdioSpec(specFolder, TreeItemCollapsibleState.Collapsed, [
+                  {
+                    viewport: viewport,
+                    locale: locale
+                  }
+                ]);
+                if (isDiffPresent) { newSpec.iconPath = diffIconPath; }
+                specs.push(newSpec);
               }
             });
           }

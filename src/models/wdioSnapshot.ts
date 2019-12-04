@@ -1,8 +1,7 @@
-import * as path from "path";
-import { Command, ExtensionContext, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { Command, TreeItem, TreeItemCollapsibleState } from "vscode";
 
-import ContextStore from "./ContextStore";
 import { SnapshotResource } from "./interfaces";
+import ResourceRetriever from './ResourceRetriever';
 
 /**
  * A snapshot captured during a WDIO test
@@ -27,16 +26,11 @@ class WdioSnapshot extends TreeItem {
     };
   }
 
-  iconPath = WdioSnapshot.generateIconPath();
+  iconPath = ResourceRetriever.getSnapshotIconPath();
 
   tooltip = this.label;
 
   contextValue = "wdioSnapshot";
-
-  private static generateIconPath(): string | undefined {
-    const context: ExtensionContext | null = ContextStore.getContext();
-    return (context ? path.join(context.extensionPath, "resources", "images", "snapshotIcon.png") : undefined);
-  }
 }
 
 export default WdioSnapshot;

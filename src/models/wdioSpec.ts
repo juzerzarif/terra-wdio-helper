@@ -1,6 +1,8 @@
-import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { TreeItem, TreeItemCollapsibleState } from "vscode";
 
+import { Themes } from './enums';
 import { SpecResource } from "./interfaces";
+import ResourceRetriever from './ResourceRetriever';
 
 /**
  * A WDIO test spec folder
@@ -14,7 +16,10 @@ class WdioSpec extends TreeItem {
     super(label, collapsibleState);
   }
 
-  iconPath = ThemeIcon.Folder;
+  iconPath = {
+    light: ResourceRetriever.getFolderIconPath(Themes.LIGHT),
+    dark: ResourceRetriever.getFolderIconPath(Themes.DARK)
+  };
 
   tooltip = this.label;
 

@@ -4,6 +4,7 @@ import * as rimraf from 'rimraf';
 import { Uri, window, workspace } from "vscode";
 
 import { SnapshotResource, SpecResource } from "../models/interfaces";
+import ResourceRetriever from '../models/ResourceRetriever';
 import WdioSnapshot from "../models/wdioSnapshot";
 import WdioSpec from "../models/wdioSpec";
 
@@ -30,21 +31,30 @@ export function getAllSnapshots(spec: WdioSpec): Array<WdioSnapshot> {
 
       snapshotFiles.forEach(function (snapshotFile: string) {
         const i: number = wdioSnapshots.findIndex(wdioSnapshot => wdioSnapshot.label === snapshotFile);
-        const referencePath = path.join(rootPath, testFolderPath, '__snapshots__', 'reference', specResource.locale, specResource.viewport, spec.label, snapshotFile);
-        const latestPath = path.join(rootPath, testFolderPath, '__snapshots__', 'latest', specResource.locale, specResource.viewport, spec.label, snapshotFile);
-        const diffPath = path.join(rootPath, testFolderPath, '__snapshots__', 'diff', specResource.locale, specResource.viewport, spec.label, snapshotFile);
-        const resource = {
+        const referencePath: string = path.join(rootPath, testFolderPath, '__snapshots__', 'reference', specResource.locale, specResource.viewport, spec.label, snapshotFile);
+        const latestPath: string = path.join(rootPath, testFolderPath, '__snapshots__', 'latest', specResource.locale, specResource.viewport, spec.label, snapshotFile);
+        const diffPath: string = path.join(rootPath, testFolderPath, '__snapshots__', 'diff', specResource.locale, specResource.viewport, spec.label, snapshotFile);
+        const resource: SnapshotResource = {
           viewport: specResource.viewport,
           locale: specResource.locale,
           referenceUri: Uri.file(referencePath),
           latestUri: Uri.file(latestPath),
           diffUri: Uri.file(diffPath)
         };
+        const isDiffPresent: boolean = pathExists(diffPath);
+        const diffIconPath: string = ResourceRetriever.getSnapshotDiffIconPath();
 
         if (i >= 0) {
           wdioSnapshots[i].resources.push(resource);
+          if (isDiffPresent) {
+            wdioSnapshots[i].iconPath = diffIconPath;
+          }
         } else {
-          wdioSnapshots.push(new WdioSnapshot(snapshotFile, [resource]));
+          const newSnapshot = new WdioSnapshot(snapshotFile, [resource]);
+          if (isDiffPresent) {
+            newSnapshot.iconPath = diffIconPath;
+          } 
+          wdioSnapshots.push(newSnapshot);
         }
       });
     }
