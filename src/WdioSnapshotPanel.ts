@@ -11,6 +11,7 @@ import {
 } from "vscode";
 
 import { SnapshotWebviewOptions } from './models/interfaces';
+import ResourceRetriever from './models/ResourceRetriever';
 import { createHtmlForSnapshot } from './utils/panelUtils';
 
 class WdioSnapshotPanel {
@@ -42,6 +43,7 @@ class WdioSnapshotPanel {
     const panel: WebviewPanel = window.createWebviewPanel(WdioSnapshotPanel.viewType, snapshot.title, column || ViewColumn.Active, {
       enableScripts: true,
     });
+    panel.iconPath = Uri.file(ResourceRetriever.getWebviewPanelIconPath());
 
     WdioSnapshotPanel._openPanels.push(new WdioSnapshotPanel(panel, snapshot));
   }
@@ -55,7 +57,7 @@ class WdioSnapshotPanel {
 
     this._panel.onDidDispose(this.dispose, this, this._disposables);
 
-    const testFolderPath: string = path.join(snapshot.resources[0].referenceUri.fsPath, "..", "..", "..", "..", "**");
+    const testFolderPath: string = path.join(snapshot.resources[0].referenceUri.fsPath, "..", "..", "..", "..", "..", "**");
     const fileSystemWatcher: FileSystemWatcher = workspace.createFileSystemWatcher(testFolderPath.replace(/\\/g, '/'));
     const updatePanel = (uri: Uri): void => {
       const referenceList = snapshot.resources.map((resource) => resource.referenceUri);

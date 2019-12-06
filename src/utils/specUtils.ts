@@ -8,7 +8,7 @@ import { SpecResource } from "../models/interfaces";
 import ResourceRetriever from "../models/ResourceRetriever";
 import WdioSpec from "../models/wdioSpec";
 
-import { pathExists } from "./common";
+import { isDirectory, pathExists } from "./common";
 
 /**
  * Get all WDIO test specs under all locales and viewports
@@ -16,22 +16,26 @@ import { pathExists } from "./common";
  * @returns An array of WdioSpecs or empty array if no specs exist
  */
 export function getAllSpecs(testFolderPath: string): Array<WdioSpec> {
-  if (pathExists(testFolderPath)) {
+  if (pathExists(testFolderPath) && isDirectory(testFolderPath)) {
     const locales: Array<string> = fs.readdirSync(testFolderPath);
     const specs: Array<WdioSpec> = [];
 
     locales.forEach((locale: string) => {
       const localePath: string = path.join(testFolderPath, locale);
-      if (pathExists(localePath)) {
+      if (pathExists(localePath) && isDirectory(localePath)) {
         const viewports: Array<string> = fs.readdirSync(localePath);
 
         viewports.forEach((viewport: string) => {
           const viewportPath: string = path.join(localePath, viewport);
 
-          if (pathExists(viewportPath)) {
+          if (pathExists(viewportPath) && isDirectory(viewportPath)) {
             const specFolders: Array<string> = fs.readdirSync(viewportPath);
 
             specFolders.forEach(specFolder => {
+              if (!isDirectory(path.join(viewportPath, specFolder))) {
+                return;
+              }
+
               const i: number = specs.findIndex(spec => spec.label === specFolder);
               const isDiffPresent: boolean = pathExists(path.join(testFolderPath, '..', 'diff', locale, viewport, specFolder));
               const diffIconPath = {

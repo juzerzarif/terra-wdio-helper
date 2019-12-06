@@ -8,7 +8,7 @@ import ResourceRetriever from '../models/ResourceRetriever';
 import WdioSnapshot from "../models/wdioSnapshot";
 import WdioSpec from "../models/wdioSpec";
 
-import { isDirEmpty, pathExists } from "./common";
+import { isDirectory, isDirEmpty, pathExists } from "./common";
 
 /**
  * Gets all the snapshots associated with the given spec under all locales and viewports 
@@ -26,7 +26,7 @@ export function getAllSnapshots(spec: WdioSpec): Array<WdioSnapshot> {
   spec.resources.forEach(function (specResource: SpecResource): void {
     const specPath: string = path.join(rootPath, testFolderPath, '__snapshots__', 'reference', specResource.locale, specResource.viewport, spec.label);
 
-    if(pathExists(specPath)) {
+    if(pathExists(specPath) && isDirectory(specPath)) {
       const snapshotFiles: Array<string> = fs.readdirSync(specPath);
 
       snapshotFiles.forEach(function (snapshotFile: string) {

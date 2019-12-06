@@ -31,6 +31,12 @@ class ResourceRetriever {
     return path.join(context.extensionPath, 'resources', 'images', 'snapshot_diff_icon.png');
   }
 
+  public static getWebviewPanelIconPath(): string {
+    const context: ExtensionContext | null = ContextStore.getContext();
+    if (!context) {return '';}
+    return path.join(context.extensionPath, 'resources', 'images', 'webview_icon.svg');
+  }
+
   public static getJsPath(): string {
     const context: ExtensionContext | null = ContextStore.getContext();
     if (!context) { return ''; }

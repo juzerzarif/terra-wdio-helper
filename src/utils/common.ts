@@ -31,4 +31,11 @@ function isDirEmpty(path: string): boolean {
   return !files.length;
 }
 
-export { pathExists, isDirEmpty };
+function isDirectory(path: string): boolean {
+  if (!fs.existsSync(path)) {
+    throw new Error(`${path} is not a path to a directory`);
+  }
+  return fs.lstatSync(path).isDirectory();
+}
+
+export { pathExists, isDirEmpty, isDirectory };
