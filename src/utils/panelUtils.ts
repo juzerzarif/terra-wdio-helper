@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { ExtensionContext, Uri, Webview, workspace } from "vscode";
 
-import ContextStore from '../models/ContextStore';
+import { ExtensionContext, Uri, Webview } from 'vscode';
+
 import {
   DiffFragmentOptions,
   EndFragmentOptions,
@@ -9,15 +9,16 @@ import {
   ReferenceFragmentOptions,
   SnapshotResource,
   SnapshotWebviewOptions,
-  StartFragmentOptions
+  StartFragmentOptions,
 } from '../models/interfaces';
 
+import ContextStore from './ContextStore';
 import { pathExists } from './common';
 
 const generateNonce = (): string => {
-  let nonce: string = '';
-  const allowedChars: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i: number = 0; i < 32; i++) {
+  let nonce = '';
+  const allowedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 32; i++) {
     nonce += allowedChars.charAt(Math.floor(Math.random() * allowedChars.length));
   }
   return nonce;
@@ -104,7 +105,11 @@ const getDiffFragment = (options: DiffFragmentOptions, webview: Webview): string
   const diffUri: Uri = webview.asWebviewUri(options.diffUri);
   const resourceId: string = options.resourceId;
 
-  if (pathExists(options.referenceUri.fsPath) && pathExists(options.latestUri.fsPath) && pathExists(options.diffUri.fsPath)) {
+  if (
+    pathExists(options.referenceUri.fsPath) &&
+    pathExists(options.latestUri.fsPath) &&
+    pathExists(options.diffUri.fsPath)
+  ) {
     return `
     <!-- ${resourceId}_diff_section_start -->
     <div id="${resourceId}_diff" class="snapshot-box diff-box">
@@ -142,7 +147,7 @@ const getDiffFragment = (options: DiffFragmentOptions, webview: Webview): string
     <!-- ${resourceId}_diff_section_end -->
     `;
   }
-  
+
   return `
   <!-- ${resourceId}_diff_section_start -->
   <div id="${resourceId}_diff" class="snapshot-box diff-box fallback">
@@ -152,15 +157,15 @@ const getDiffFragment = (options: DiffFragmentOptions, webview: Webview): string
   </div>
   <!-- ${resourceId}_diff_section_end -->
   `;
-}; 
+};
 
 const getResourceContainer = (resource: SnapshotResource, webview: Webview): string => {
-  let header: string = `${resource.locale} | ${resource.viewport}`;
+  let header = `${resource.locale} | ${resource.viewport}`;
   if (pathExists(resource.diffUri.fsPath)) {
     header = `🔴 ${header}`;
   }
-  const resourceId: string = `${resource.locale}_${resource.viewport.replace('_', '-')}`;
-  const start: string = `
+  const resourceId = `${resource.locale}_${resource.viewport.replace('_', '-')}`;
+  const start = `
   <div class="resource-container">
     <h2 class="resource-header">${header}</h2>
     <div>
@@ -170,7 +175,7 @@ const getResourceContainer = (resource: SnapshotResource, webview: Webview): str
         <button id="${resourceId}_diff_tab" class="tab-button">Diff</button>
       </div>
   `;
-  const end: string = `
+  const end = `
     </div>
   </div>
   <hr />
@@ -178,28 +183,37 @@ const getResourceContainer = (resource: SnapshotResource, webview: Webview): str
 
   return `
   ${start}
-  ${getReferenceFragment({referenceUri: resource.referenceUri, resourceId: resourceId}, webview)}
-  ${getLatestFragment({latestUri: resource.latestUri, resourceId: resourceId}, webview)}
-  ${getDiffFragment({
-    referenceUri: resource.referenceUri, 
-    latestUri: resource.latestUri, 
-    diffUri: resource.diffUri, 
-    resourceId: resourceId
-  }, webview)}
+  ${getReferenceFragment({ referenceUri: resource.referenceUri, resourceId: resourceId }, webview)}
+  ${getLatestFragment({ latestUri: resource.latestUri, resourceId: resourceId }, webview)}
+  ${getDiffFragment(
+    {
+      referenceUri: resource.referenceUri,
+      latestUri: resource.latestUri,
+      diffUri: resource.diffUri,
+      resourceId: resourceId,
+    },
+    webview
+  )}
   ${end}
   `;
 };
 
 const createHtmlForSnapshot = (snapshot: SnapshotWebviewOptions, webview: Webview): string => {
   const context: ExtensionContext | null = ContextStore.getContext();
-  if (!context) { return ''; }
-  
-  const stylesheetPath = webview.asWebviewUri(Uri.file(path.join(context.extensionPath, 'resources', 'dist', 'index.min.css')));
-  const scriptPath = webview.asWebviewUri(Uri.file(path.join(context.extensionPath, 'resources', 'dist', 'index.min.js')));
+  if (!context) {
+    return '';
+  }
+
+  const stylesheetPath = webview.asWebviewUri(
+    Uri.file(path.join(context.extensionPath, 'resources', 'dist', 'index.min.css'))
+  );
+  const scriptPath = webview.asWebviewUri(
+    Uri.file(path.join(context.extensionPath, 'resources', 'dist', 'index.min.js'))
+  );
   const nonce: string = generateNonce();
 
-  const start: string = getStartFragment({title: snapshot.title, stylesheetUri: stylesheetPath, nonce: nonce});
-  const end: string = getEndFragment({scriptUri: scriptPath, nonce: nonce});
+  const start: string = getStartFragment({ title: snapshot.title, stylesheetUri: stylesheetPath, nonce: nonce });
+  const end: string = getEndFragment({ scriptUri: scriptPath, nonce: nonce });
 
   let accumulator = start;
   snapshot.resources.forEach((resource: SnapshotResource): void => {

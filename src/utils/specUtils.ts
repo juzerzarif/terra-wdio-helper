@@ -1,14 +1,15 @@
-import * as fs from "fs";
-import * as path from "path";
-import * as rimraf from "rimraf";
-import { TreeItemCollapsibleState, window, workspace, WorkspaceFolder } from "vscode";
+import * as fs from 'fs';
+import * as path from 'path';
 
-import { Themes } from "../models/enums";
-import { SpecResource } from "../models/interfaces";
-import ResourceRetriever from "../models/ResourceRetriever";
-import WdioSpec from "../models/wdioSpec";
+import * as rimraf from 'rimraf';
+import { TreeItemCollapsibleState, WorkspaceFolder, window, workspace } from 'vscode';
 
-import { isDirectory, pathExists } from "./common";
+import WdioSpec from '../models/WdioSpec';
+import { SpecResource } from '../models/interfaces';
+import { Themes } from '../models/enums';
+
+import ResourceRetriever from './ResourceRetriever';
+import { isDirectory, pathExists } from './common';
 
 /**
  * Get all WDIO test specs under all locales and viewports
@@ -31,29 +32,35 @@ export function getAllSpecs(testFolderPath: string): Array<WdioSpec> {
           if (pathExists(viewportPath) && isDirectory(viewportPath)) {
             const specFolders: Array<string> = fs.readdirSync(viewportPath);
 
-            specFolders.forEach(specFolder => {
+            specFolders.forEach((specFolder) => {
               if (!isDirectory(path.join(viewportPath, specFolder))) {
                 return;
               }
 
-              const i: number = specs.findIndex(spec => spec.label === specFolder);
-              const isDiffPresent: boolean = pathExists(path.join(testFolderPath, '..', 'diff', locale, viewport, specFolder));
+              const i: number = specs.findIndex((spec) => spec.label === specFolder);
+              const isDiffPresent: boolean = pathExists(
+                path.join(testFolderPath, '..', 'diff', locale, viewport, specFolder)
+              );
               const diffIconPath = {
                 light: ResourceRetriever.getFolderDiffIconPath(Themes.LIGHT),
-                dark: ResourceRetriever.getFolderDiffIconPath(Themes.DARK)
+                dark: ResourceRetriever.getFolderDiffIconPath(Themes.DARK),
               };
 
               if (i >= 0) {
                 specs[i].resources.push({ viewport: viewport, locale: locale });
-                if (isDiffPresent) { specs[i].iconPath = diffIconPath; }
+                if (isDiffPresent) {
+                  specs[i].iconPath = diffIconPath;
+                }
               } else {
                 const newSpec: WdioSpec = new WdioSpec(specFolder, TreeItemCollapsibleState.Collapsed, [
                   {
                     viewport: viewport,
-                    locale: locale
-                  }
+                    locale: locale,
+                  },
                 ]);
-                if (isDiffPresent) { newSpec.iconPath = diffIconPath; }
+                if (isDiffPresent) {
+                  newSpec.iconPath = diffIconPath;
+                }
                 specs.push(newSpec);
               }
             });
@@ -70,18 +77,28 @@ export function getAllSpecs(testFolderPath: string): Array<WdioSpec> {
 
 /**
  * Delete all snapshots associated with the given spec
- * @param spec - The spec to delete all snapshots for 
+ * @param spec - The spec to delete all snapshots for
  */
 export function deleteSpec(spec: WdioSpec): void {
   const resources: SpecResource[] = spec.resources;
   const workspaceRoot: WorkspaceFolder | undefined = workspace.workspaceFolders && workspace.workspaceFolders[0];
-  const testFolderPath: string | undefined = workspace.getConfiguration("terraWdioHelper").get("wdioTestFolderRelativePath");
-  if (!workspaceRoot || !testFolderPath || typeof testFolderPath !== 'string') { return; }
-  
+  const testFolderPath: string | undefined = workspace
+    .getConfiguration('terraWdioHelper')
+    .get('wdioTestFolderRelativePath');
+  if (!workspaceRoot || !testFolderPath || typeof testFolderPath !== 'string') {
+    return;
+  }
+
   const specBasePath: string = path.join(workspaceRoot.uri.fsPath, testFolderPath, '__snapshots__');
 
   resources.forEach((resource: SpecResource): void => {
-    const referenceSpecPath: string = path.join(specBasePath, 'reference', resource.locale, resource.viewport, spec.label);
+    const referenceSpecPath: string = path.join(
+      specBasePath,
+      'reference',
+      resource.locale,
+      resource.viewport,
+      spec.label
+    );
     const latestSpecPath: string = path.join(specBasePath, 'latest', resource.locale, resource.viewport, spec.label);
     const diffSpecPath: string = path.join(specBasePath, 'diff', resource.locale, resource.viewport, spec.label);
 
@@ -109,8 +126,12 @@ export function deleteSpec(spec: WdioSpec): void {
 export function deleteDiffSpecs(spec: WdioSpec): void {
   const resources: SpecResource[] = spec.resources;
   const workspaceRoot: WorkspaceFolder | undefined = workspace.workspaceFolders && workspace.workspaceFolders[0];
-  const testFolderPath: string | undefined = workspace.getConfiguration("terraWdioHelper").get("wdioTestFolderRelativePath");
-  if (!workspaceRoot || !testFolderPath || typeof testFolderPath !== 'string') { return; }
+  const testFolderPath: string | undefined = workspace
+    .getConfiguration('terraWdioHelper')
+    .get('wdioTestFolderRelativePath');
+  if (!workspaceRoot || !testFolderPath || typeof testFolderPath !== 'string') {
+    return;
+  }
 
   const specBasePath: string = path.join(workspaceRoot.uri.fsPath, testFolderPath, '__snapshots__', 'diff');
 

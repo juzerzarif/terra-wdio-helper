@@ -1,7 +1,8 @@
-import { Command, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { Command, TreeItem, TreeItemCollapsibleState } from 'vscode';
 
-import { SnapshotResource } from "./interfaces";
-import ResourceRetriever from './ResourceRetriever';
+import ResourceRetriever from '../utils/ResourceRetriever';
+
+import { SnapshotResource } from './interfaces';
 
 /**
  * A snapshot captured during a WDIO test
@@ -9,20 +10,19 @@ import ResourceRetriever from './ResourceRetriever';
 class WdioSnapshot extends TreeItem {
   public command: Command;
 
-  constructor(
-    public readonly label: string,
-    public resources: Array<SnapshotResource>
-  ) {
+  constructor(public readonly label: string, public resources: Array<SnapshotResource>) {
     super(label, TreeItemCollapsibleState.None);
 
     this.command = {
       command: 'terraWdioHelper.displaySnapshot',
       title: 'Open Snapshot',
       tooltip: `Open WDIO snapshot ${label}`,
-      arguments: [{
-        title: label,
-        resources: this.resources
-      }]
+      arguments: [
+        {
+          title: label,
+          resources: this.resources,
+        },
+      ],
     };
   }
 
@@ -30,7 +30,7 @@ class WdioSnapshot extends TreeItem {
 
   tooltip = this.label;
 
-  contextValue = "wdioSnapshot";
+  contextValue = 'wdioSnapshot';
 }
 
 export default WdioSnapshot;

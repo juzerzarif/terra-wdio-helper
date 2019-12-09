@@ -1,8 +1,9 @@
-import { ExtensionContext } from "vscode";
+import { ExtensionContext } from 'vscode';
 
 class ContextStore {
   private static context: ExtensionContext | null = null;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
   public static getContext(): ExtensionContext | null {

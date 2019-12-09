@@ -1,4 +1,4 @@
-import { Uri } from "vscode";
+import { Uri } from 'vscode';
 
 /**
  * A resource object related to a test spec

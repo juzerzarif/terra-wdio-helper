@@ -1,0 +1,11 @@
+{
+    "eslint.autoFixOnSave": true,
+    "eslint.validate":  [
+        "javascript",
+        {"language":  "typescript",  "autoFix":  true  },
+      ],
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "files.eol": "\n"
+}

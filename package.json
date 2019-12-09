@@ -2,7 +2,7 @@
   "name": "terra-wdio-helper",
   "displayName": "Terra WDIO Helper",
   "description": "A tool to help analyze Terra WDIO test results",
-  "icon": "resources/images/extensionIcon.png",
+  "icon": "resources/images/extension_icon.png",
   "version": "0.2.1",
   "publisher": "juzerzarif",
   "license": "SEE LICENSE IN LICENSE.txt",
@@ -123,7 +123,7 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run lint:ts && npm run build:prod && npm run bundle:resources",
+    "vscode:prepublish": "npm run lint && npm run build:prod",
     "build:development": "webpack --mode development",
     "build:development:watch": "webpack --mode development --watch",
     "build:prod": "webpack --mode production",
@@ -131,31 +131,41 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
-    "lint:ts": "tslint -p .",
-    "bundle:resources": "gulp"
+    "lint": "npm run lint:ts && npm run lint:js",
+    "lint:ts": "eslint . --ext .ts --fix",
+    "lint:js": "eslint . --ext .js --fix"
   },
   "devDependencies": {
+    "@babel/core": "^7.7.5",
+    "@babel/preset-env": "^7.7.6",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.11.7",
     "@types/rimraf": "^2.0.3",
     "@types/vscode": "^1.38.0",
+    "@typescript-eslint/eslint-plugin": "^2.10.0",
+    "@typescript-eslint/parser": "^2.10.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.1",
+    "eslint": "^6.7.2",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-sort-imports-es6-autofix": "^0.5.0",
     "glob": "^7.1.5",
-    "gulp": "^4.0.2",
-    "gulp-cli": "^2.2.0",
-    "gulp-concat": "^2.6.1",
-    "gulp-csso": "^4.0.1",
-    "gulp-sourcemaps": "^2.6.5",
-    "gulp-terser": "^1.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
     "mocha": "^6.2.2",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "prettier": "^1.19.1",
+    "terser-webpack-plugin": "^2.2.2",
     "ts-loader": "^6.2.1",
-    "tslint": "^5.20.0",
     "typescript": "^3.7.2",
     "vscode-test": "^1.2.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
+    "beerslider": "^1.0.3",
     "rimraf": "^3.0.0"
   }
 }

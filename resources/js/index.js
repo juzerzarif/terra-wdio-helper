@@ -1,63 +1,17 @@
-const vscode = acquireVsCodeApi();
+import { getWebviewState, initialState, setWebviewState, updateScrollPosition } from './VSCodeWebApi';
+import { setOpacity, toggleDiffDisplay, toggleResourceDisplay } from './UIActions';
 
-function updateActiveTab(resourceId, type) {
-  const state = vscode.getState();
-  const i = state.activeTabs.findIndex(activeTab => activeTab.resourceId === resourceId);
-  state.activeTabs[i].type = type;
-  vscode.setState(state);
+import '../stylesheets/index.css';
+import 'beerslider/dist/BeerSlider.unmin.css';
+
+let state = getWebviewState();
+if (!state) {
+  setWebviewState(initialState);
+  state = initialState;
 }
-
-function updateActiveDiff(resourceId, type) {
-  const state = vscode.getState();
-  const i = state.activeDiffs.findIndex(activeDiff => activeDiff.resourceId === resourceId);
-  state.activeDiffs[i].type = type;
-  vscode.setState(state);
-}
-
-function toggleResourceDisplay(resourceId, snapshotType) {
-  const snapshotIds = [`${resourceId}_reference`, `${resourceId}_latest`, `${resourceId}_diff`];
-  const tabIds = [`${resourceId}_reference_tab`, `${resourceId}_latest_tab`, `${resourceId}_diff_tab`];
-  const clickedSnapshot = `${resourceId}_${snapshotType}`;
-  const clickedTab = `${resourceId}_${snapshotType}_tab`;
-  
-  snapshotIds.forEach(id => document.getElementById(id).classList.remove('active'));
-  tabIds.forEach(id => document.getElementById(id).classList.remove('active'));
-  document.getElementById(clickedSnapshot).classList.add('active');
-  document.getElementById(clickedTab).classList.add('active');
-  updateActiveTab(resourceId, snapshotType);
-
-  const sliderContainer = document.getElementById(`${resourceId}_diff_slide`);
-  if(snapshotType === 'diff' && sliderContainer && sliderContainer.classList.contains('active')) {
-    setTimeout(() => initSliderControl(resourceId), 0);
-  }
-}
-
-function toggleDiffDisplay(resourceId, diffType) {
-  const diffIds = [`${resourceId}_diff_default`, `${resourceId}_diff_two-up`, `${resourceId}_diff_slide`, `${resourceId}_diff_onion`];
-  const buttonIds = [`${resourceId}_diff_default_button`, `${resourceId}_diff_two-up_button`, `${resourceId}_diff_slide_button`, `${resourceId}_diff_onion_button`];
-  const clickedDiff = `${resourceId}_diff_${diffType}`;
-  const clickedButton = `${resourceId}_diff_${diffType}_button`;
-
-  diffIds.forEach(id => document.getElementById(id).classList.remove('active'));
-  buttonIds.forEach(id => document.getElementById(id).classList.remove('active'));
-  document.getElementById(clickedDiff).classList.add('active');
-  document.getElementById(clickedButton).classList.add('active');
-  updateActiveDiff(resourceId, diffType);
-
-  if (diffType === 'slide') {
-    setTimeout(() => initSliderControl(resourceId), 0);
-  }
-}
-
-function initSliderControl(resourceId) {
-  const sliderContainer = document.getElementById(`${resourceId}_diff_slide`);
-  new BeerSlider(sliderContainer);
-}
-
-function setOpacity(onionImageContainer, value) {
-  const latestImage = onionImageContainer.getElementsByTagName('img')[1];
-  latestImage.style.opacity = value / 100;
-}
+document.getElementsByClassName('snapshot-container')[0].scroll(state.scrollPosition.left, state.scrollPosition.top);
+state.activeTabs.forEach((activeTab) => toggleResourceDisplay(activeTab.resourceId, activeTab.type));
+state.activeDiffs.forEach((activeDiff) => toggleDiffDisplay(activeDiff.resourceId, activeDiff.type));
 
 const tabButtons = document.querySelectorAll('[id*="_tab"]');
 for (let i = 0; i < tabButtons.length; i++) {
@@ -78,7 +32,7 @@ for (let i = 0; i < diffOptionButtons.length; i++) {
     const resourceId = `${captureMatches[0]}_${captureMatches[1]}`;
     const diffType = captureMatches[3];
     toggleDiffDisplay(resourceId, diffType);
-  })
+  });
 }
 
 const onionDiffBoxes = document.querySelectorAll('[id$="_diff_onion"]');
@@ -86,15 +40,12 @@ for (let i = 0; i < onionDiffBoxes.length; i++) {
   const imageContainer = onionDiffBoxes[i].getElementsByClassName('diff-onion-image')[0];
   onionDiffBoxes[i].getElementsByClassName('onion-slider-input')[0].addEventListener('input', function() {
     setOpacity(imageContainer, this.value);
-  })
+  });
   setOpacity(imageContainer, 50);
 }
 
 document.getElementsByClassName('snapshot-container')[0].addEventListener('scroll', (event) => {
-  const left = event.target.scrollLeft;
   const top = event.target.scrollTop;
-  const state = vscode.getState();
-  state.scrollPosition.left = left;
-  state.scrollPosition.top = top;
-  vscode.setState(state);
-})
+  const left = event.target.scrollLeft;
+  updateScrollPosition(top, left);
+});

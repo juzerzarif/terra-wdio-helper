@@ -1,45 +1,83 @@
-import * as fs  from 'fs';
+import * as fs from 'fs';
 import * as path from 'path';
+
 import * as rimraf from 'rimraf';
-import { Uri, window, workspace } from "vscode";
+import { Uri, window, workspace } from 'vscode';
 
-import { SnapshotResource, SpecResource } from "../models/interfaces";
-import ResourceRetriever from '../models/ResourceRetriever';
-import WdioSnapshot from "../models/wdioSnapshot";
-import WdioSpec from "../models/wdioSpec";
+import WdioSnapshot from '../models/WdioSnapshot';
+import WdioSpec from '../models/WdioSpec';
+import { SnapshotResource, SpecResource } from '../models/interfaces';
 
-import { isDirectory, isDirEmpty, pathExists } from "./common";
+import ResourceRetriever from './ResourceRetriever';
+import { isDirEmpty, isDirectory, pathExists } from './common';
 
 /**
- * Gets all the snapshots associated with the given spec under all locales and viewports 
+ * Gets all the snapshots associated with the given spec under all locales and viewports
  * @param spec - The WDIO spec to get snapshots for
  * @returns An array of WdioSnapshots associated with the spec, empty array if no snapshots exist
  */
 export function getAllSnapshots(spec: WdioSpec): Array<WdioSnapshot> {
   const rootPath = workspace.workspaceFolders && workspace.workspaceFolders[0].uri.fsPath;
-  const testFolderPath: string | undefined = workspace.getConfiguration("terraWdioHelper").get("wdioTestFolderRelativePath");
-  if (!rootPath || typeof testFolderPath !== "string") {
+  const testFolderPath: string | undefined = workspace
+    .getConfiguration('terraWdioHelper')
+    .get('wdioTestFolderRelativePath');
+  if (!rootPath || typeof testFolderPath !== 'string') {
     return [];
   }
 
   const wdioSnapshots: Array<WdioSnapshot> = [];
-  spec.resources.forEach(function (specResource: SpecResource): void {
-    const specPath: string = path.join(rootPath, testFolderPath, '__snapshots__', 'reference', specResource.locale, specResource.viewport, spec.label);
+  spec.resources.forEach(function(specResource: SpecResource): void {
+    const specPath: string = path.join(
+      rootPath,
+      testFolderPath,
+      '__snapshots__',
+      'reference',
+      specResource.locale,
+      specResource.viewport,
+      spec.label
+    );
 
-    if(pathExists(specPath) && isDirectory(specPath)) {
+    if (pathExists(specPath) && isDirectory(specPath)) {
       const snapshotFiles: Array<string> = fs.readdirSync(specPath);
 
-      snapshotFiles.forEach(function (snapshotFile: string) {
-        const i: number = wdioSnapshots.findIndex(wdioSnapshot => wdioSnapshot.label === snapshotFile);
-        const referencePath: string = path.join(rootPath, testFolderPath, '__snapshots__', 'reference', specResource.locale, specResource.viewport, spec.label, snapshotFile);
-        const latestPath: string = path.join(rootPath, testFolderPath, '__snapshots__', 'latest', specResource.locale, specResource.viewport, spec.label, snapshotFile);
-        const diffPath: string = path.join(rootPath, testFolderPath, '__snapshots__', 'diff', specResource.locale, specResource.viewport, spec.label, snapshotFile);
+      snapshotFiles.forEach(function(snapshotFile: string) {
+        const i: number = wdioSnapshots.findIndex((wdioSnapshot) => wdioSnapshot.label === snapshotFile);
+        const referencePath: string = path.join(
+          rootPath,
+          testFolderPath,
+          '__snapshots__',
+          'reference',
+          specResource.locale,
+          specResource.viewport,
+          spec.label,
+          snapshotFile
+        );
+        const latestPath: string = path.join(
+          rootPath,
+          testFolderPath,
+          '__snapshots__',
+          'latest',
+          specResource.locale,
+          specResource.viewport,
+          spec.label,
+          snapshotFile
+        );
+        const diffPath: string = path.join(
+          rootPath,
+          testFolderPath,
+          '__snapshots__',
+          'diff',
+          specResource.locale,
+          specResource.viewport,
+          spec.label,
+          snapshotFile
+        );
         const resource: SnapshotResource = {
           viewport: specResource.viewport,
           locale: specResource.locale,
           referenceUri: Uri.file(referencePath),
           latestUri: Uri.file(latestPath),
-          diffUri: Uri.file(diffPath)
+          diffUri: Uri.file(diffPath),
         };
         const isDiffPresent: boolean = pathExists(diffPath);
         const diffIconPath: string = ResourceRetriever.getSnapshotDiffIconPath();
@@ -53,7 +91,7 @@ export function getAllSnapshots(spec: WdioSpec): Array<WdioSnapshot> {
           const newSnapshot = new WdioSnapshot(snapshotFile, [resource]);
           if (isDiffPresent) {
             newSnapshot.iconPath = diffIconPath;
-          } 
+          }
           wdioSnapshots.push(newSnapshot);
         }
       });

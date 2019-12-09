@@ -1,17 +1,9 @@
 import * as path from 'path';
-import {
-  Disposable,
-  FileSystemWatcher,
-  Uri,
-  ViewColumn,
-  Webview,
-  WebviewPanel,
-  window,
-  workspace
-} from "vscode";
 
+import { Disposable, FileSystemWatcher, Uri, ViewColumn, Webview, WebviewPanel, window, workspace } from 'vscode';
+
+import ResourceRetriever from './utils/ResourceRetriever';
 import { SnapshotWebviewOptions } from './models/interfaces';
-import ResourceRetriever from './models/ResourceRetriever';
 import { createHtmlForSnapshot } from './utils/panelUtils';
 
 class WdioSnapshotPanel {
@@ -31,8 +23,8 @@ class WdioSnapshotPanel {
    */
   public static createOrShow(snapshot: SnapshotWebviewOptions): void {
     const column: ViewColumn | undefined = window.activeTextEditor ? window.activeTextEditor.viewColumn : undefined;
-    
-    const i: number = WdioSnapshotPanel._openPanels.findIndex(function (panel: WdioSnapshotPanel): boolean {
+
+    const i: number = WdioSnapshotPanel._openPanels.findIndex(function(panel: WdioSnapshotPanel): boolean {
       return panel.title === snapshot.title;
     });
     if (i >= 0) {
@@ -40,9 +32,14 @@ class WdioSnapshotPanel {
       return;
     }
 
-    const panel: WebviewPanel = window.createWebviewPanel(WdioSnapshotPanel.viewType, snapshot.title, column || ViewColumn.Active, {
-      enableScripts: true,
-    });
+    const panel: WebviewPanel = window.createWebviewPanel(
+      WdioSnapshotPanel.viewType,
+      snapshot.title,
+      column || ViewColumn.Active,
+      {
+        enableScripts: true,
+      }
+    );
     panel.iconPath = Uri.file(ResourceRetriever.getWebviewPanelIconPath());
 
     WdioSnapshotPanel._openPanels.push(new WdioSnapshotPanel(panel, snapshot));
@@ -57,16 +54,26 @@ class WdioSnapshotPanel {
 
     this._panel.onDidDispose(this.dispose, this, this._disposables);
 
-    const testFolderPath: string = path.join(snapshot.resources[0].referenceUri.fsPath, "..", "..", "..", "..", "..", "**");
+    const testFolderPath: string = path.join(
+      snapshot.resources[0].referenceUri.fsPath,
+      '..',
+      '..',
+      '..',
+      '..',
+      '..',
+      '**'
+    );
     const fileSystemWatcher: FileSystemWatcher = workspace.createFileSystemWatcher(testFolderPath.replace(/\\/g, '/'));
     const updatePanel = (uri: Uri): void => {
       const referenceList = snapshot.resources.map((resource) => resource.referenceUri);
       const latestList = snapshot.resources.map((resource) => resource.latestUri);
       const diffList = snapshot.resources.map((resource) => resource.diffUri);
 
-      if (referenceList.some((ref: Uri) => ref.fsPath === uri.fsPath) 
-        || latestList.some((ref: Uri) => ref.fsPath === uri.fsPath) 
-        || diffList.some((ref: Uri) => ref.fsPath === uri.fsPath)) {
+      if (
+        referenceList.some((ref: Uri) => ref.fsPath === uri.fsPath) ||
+        latestList.some((ref: Uri) => ref.fsPath === uri.fsPath) ||
+        diffList.some((ref: Uri) => ref.fsPath === uri.fsPath)
+      ) {
         this._update();
       }
     };
@@ -79,7 +86,9 @@ class WdioSnapshotPanel {
    * Dispose this webview panel and associated disposables
    */
   public dispose(): void {
-    const panelIndex = WdioSnapshotPanel._openPanels.findIndex((panel: WdioSnapshotPanel): boolean => panel.title === this.title);
+    const panelIndex = WdioSnapshotPanel._openPanels.findIndex(
+      (panel: WdioSnapshotPanel): boolean => panel.title === this.title
+    );
     WdioSnapshotPanel._openPanels.splice(panelIndex, 1);
     this._panel.dispose();
     this._disposables.forEach((disposable: Disposable) => disposable.dispose());
