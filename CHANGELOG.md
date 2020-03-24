@@ -7,3 +7,8 @@
 ## 0.2.0
 
 - Indicators for a diff being present for a snapshot
+
+## 0.2.2
+
+- Added command to replace reference snapshot with the latest
+- Known debt: Webview doesn't refresh image cache until panel is suspended and re-revealed
