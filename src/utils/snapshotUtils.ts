@@ -150,3 +150,23 @@ export function deleteDiffSnapshots(snapshot: WdioSnapshot): void {
     }
   });
 }
+
+/**
+ * Replaces the reference screenshots with the latest screenshots (will also delete diffs to maintain semantic sanity)
+ * @param snapshot - A WDIO snapshot object
+ */
+export function replaceWithLatest(snapshot: WdioSnapshot): void {
+  snapshot.resources.forEach((resource: SnapshotResource): void => {
+    try {
+      if (pathExists(resource.latestUri.fsPath)) {
+        fs.copyFileSync(resource.latestUri.fsPath, resource.referenceUri.fsPath);
+        if (pathExists(resource.diffUri.fsPath)) {
+          rimraf.sync(resource.diffUri.fsPath);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      window.showErrorMessage(`Couldn't complete operation: ${err}`);
+    }
+  });
+}

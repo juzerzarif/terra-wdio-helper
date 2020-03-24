@@ -8,7 +8,7 @@ import WdioSnapshotPanel from './WdioSnapshotPanel';
 import WdioSnapshotTreeProvider from './WdioSnapshotTreeProvider';
 import WdioSpec from './models/WdioSpec';
 import { SnapshotWebviewOptions } from './models/interfaces';
-import { deleteDiffSnapshots, deleteSnapshot } from './utils/snapshotUtils';
+import { deleteDiffSnapshots, deleteSnapshot, replaceWithLatest } from './utils/snapshotUtils';
 import { deleteDiffSpecs, deleteSpec } from './utils/specUtils';
 
 function activateWdioTree(rootPath: WorkspaceFolder | undefined, context: ExtensionContext): void {
@@ -27,6 +27,10 @@ function activateWdioTree(rootPath: WorkspaceFolder | undefined, context: Extens
   const deleteDiffSnapshotDisposable: Disposable = commands.registerCommand(
     'terraWdioHelper.deleteDiffSnapshot',
     (snapshot: WdioSnapshot): void => deleteDiffSnapshots(snapshot)
+  );
+  const replaceWithLatestDisposable: Disposable = commands.registerCommand(
+    'terraWdioHelper.replaceWithLatest',
+    replaceWithLatest
   );
   const deleteSpecDisposable: Disposable = commands.registerCommand(
     'terraWdioHelper.deleteSpec',
@@ -53,6 +57,7 @@ function activateWdioTree(rootPath: WorkspaceFolder | undefined, context: Extens
     displaySnapshotDisposable,
     deleteSnapshotDisposable,
     deleteDiffSnapshotDisposable,
+    replaceWithLatestDisposable,
     deleteSpecDisposable,
     deleteDiffSpecDisposable,
     refreshTreeDisposable

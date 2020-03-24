@@ -52,6 +52,10 @@
         "title": "Delete diffs"
       },
       {
+        "command": "terraWdioHelper.replaceWithLatest",
+        "title": "Replace reference with latest"
+      },
+      {
         "command": "terraWdioHelper.deleteSpec",
         "title": "Delete Spec",
         "icon": {
@@ -100,6 +104,10 @@
         },
         {
           "command": "terraWdioHelper.deleteDiffSnapshot",
+          "when": "view == terraWdioHelper && viewItem == wdioSnapshot"
+        },
+        {
+          "command": "terraWdioHelper.replaceWithLatest",
           "when": "view == terraWdioHelper && viewItem == wdioSnapshot"
         },
         {

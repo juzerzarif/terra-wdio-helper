@@ -47,13 +47,7 @@ class WdioSnapshotTreeProvider implements TreeDataProvider<WdioSnapshot | WdioSp
     if (element) {
       return Promise.resolve(
         getAllSnapshots(element).sort((snapshotA, snapshotB) => {
-          if (snapshotA.label < snapshotB.label) {
-            return -1;
-          }
-          if (snapshotB.label < snapshotA.label) {
-            return 1;
-          }
-          return 0;
+          return snapshotA.label.localeCompare(snapshotB.label, 'en', { numeric: true });
         })
       );
     }
@@ -61,13 +55,7 @@ class WdioSnapshotTreeProvider implements TreeDataProvider<WdioSnapshot | WdioSp
     const referencePath = path.join(this.workspaceRoot, testFolderPath, '__snapshots__', 'reference');
     return Promise.resolve(
       getAllSpecs(referencePath).sort((specA, specB) => {
-        if (specA.label < specB.label) {
-          return -1;
-        }
-        if (specB.label < specA.label) {
-          return 1;
-        }
-        return 0;
+        return specA.label.localeCompare(specB.label, 'en', { numeric: true });
       })
     );
   }
