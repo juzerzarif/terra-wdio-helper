@@ -15,7 +15,7 @@ import {
 import ContextStore from './ContextStore';
 import { pathExists } from './common';
 
-const generateNonce = (): string => {
+const generateRandomString = (): string => {
   let nonce = '';
   const allowedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < 32; i++) {
@@ -66,7 +66,7 @@ const getReferenceFragment = (options: ReferenceFragmentOptions, webview: Webvie
   if (pathExists(options.referenceUri.fsPath)) {
     return `
     <div id="${resourceId}_reference" class="snapshot-box reference-box active">
-      <img class="${resourceId}_reference_img" src="${referenceUri}" />
+      <img class="${resourceId}_reference_img" src="${referenceUri}?${generateRandomString()}" />
     </div>
     `;
   }
@@ -86,7 +86,7 @@ const getLatestFragment = (options: LatestFragmentOptions, webview: Webview): st
   if (pathExists(options.latestUri.fsPath)) {
     return `
     <div id="${resourceId}_latest" class="snapshot-box latest-box">
-      <img class="${resourceId}_latest_img" src="${latestUri}" />
+      <img class="${resourceId}_latest_img" src="${latestUri}?${generateRandomString()}" />
     </div>
     `;
   }
@@ -115,22 +115,22 @@ const getDiffFragment = (options: DiffFragmentOptions, webview: Webview): string
     <div id="${resourceId}_diff" class="snapshot-box diff-box">
       <div class="diff-image-container">
         <div id="${resourceId}_diff_default" class="diff-default">
-          <img class="${resourceId}_diff_img" src="${diffUri}" />
+          <img class="${resourceId}_diff_img" src="${diffUri}?${generateRandomString()}" />
         </div>
         <div id="${resourceId}_diff_two-up" class="diff-two-up active">
-          <img class="${resourceId}_reference_img" src="${referenceUri}" />
-          <img class="${resourceId}_latest_img" src="${latestUri}" />
+          <img class="${resourceId}_reference_img" src="${referenceUri}?${generateRandomString()}" />
+          <img class="${resourceId}_latest_img" src="${latestUri}?${generateRandomString()}" />
         </div>
         <div id="${resourceId}_diff_slide" class="diff-slide beer-slider">
-          <img class="${resourceId}_reference_img" src="${referenceUri}" />
+          <img class="${resourceId}_reference_img" src="${referenceUri}?${generateRandomString()}" />
           <div class="slide-latest beer-reveal">
-            <img class="${resourceId}_latest_img" src="${latestUri}" />
+            <img class="${resourceId}_latest_img" src="${latestUri}?${generateRandomString()}" />
           </div>
         </div>
         <div id="${resourceId}_diff_onion" class="diff-onion">
           <div class="diff-onion-image">
-            <img class="${resourceId}_reference_img" src="${referenceUri}" />
-            <img class="${resourceId}_latest_img" src="${latestUri}" />
+            <img class="${resourceId}_reference_img" src="${referenceUri}?${generateRandomString()}" />
+            <img class="${resourceId}_latest_img" src="${latestUri}?${generateRandomString()}" />
           </div>
           <div class="onion-slider-container">
             <input type="range" min="0" max="100" value="50" step="1" class="onion-slider-input">
@@ -210,7 +210,7 @@ const createHtmlForSnapshot = (snapshot: SnapshotWebviewOptions, webview: Webvie
   const scriptPath = webview.asWebviewUri(
     Uri.file(path.join(context.extensionPath, 'resources', 'dist', 'index.min.js'))
   );
-  const nonce: string = generateNonce();
+  const nonce: string = generateRandomString();
 
   const start: string = getStartFragment({ title: snapshot.title, stylesheetUri: stylesheetPath, nonce: nonce });
   const end: string = getEndFragment({ scriptUri: scriptPath, nonce: nonce });

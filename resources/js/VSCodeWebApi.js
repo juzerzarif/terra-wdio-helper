@@ -32,13 +32,47 @@ const getInitialActiveDiffs = () => {
   return initialActiveDiffs;
 };
 
-const initialState = {
-  scrollPosition: {
-    left: 0,
-    top: 0,
-  },
-  activeTabs: getInitialActiveTabs(),
-  activeDiffs: getInitialActiveDiffs(),
+const initializeWebviewState = () => {
+  const savedState = getState();
+
+  if (!savedState) {
+    const initialState = {
+      scrollPosition: {
+        left: 0,
+        top: 0,
+      },
+      activeTabs: getInitialActiveTabs(),
+      activeDiffs: getInitialActiveDiffs(),
+    };
+    setState(initialState);
+    return;
+  }
+
+  /**
+   * Need to check if all the elements saved in the state are present in the DOM
+   * since there could've been changes in the filesystem that affected the DOM output
+   */
+  const newActiveTabs = [];
+  savedState.activeTabs.forEach((tab) => {
+    const tabId = `${tab.resourceId}_reference_tab`;
+    if (document.getElementById(tabId)) {
+      newActiveTabs.push(tab);
+    }
+  });
+
+  const newActiveDiffs = [];
+  savedState.activeDiffs.forEach((diff) => {
+    const diffId = `${diff.resourceId}_diff_default`;
+    if (document.getElementById(diffId)) {
+      newActiveDiffs.push(diff);
+    }
+  });
+
+  setState({
+    ...savedState,
+    activeTabs: newActiveTabs,
+    activeDiffs: newActiveDiffs,
+  });
 };
 
 const updateActiveTab = (resourceId, type) => {
@@ -63,7 +97,7 @@ const updateScrollPosition = (top, left) => {
 };
 
 export {
-  initialState,
+  initializeWebviewState,
   getState as getWebviewState,
   setState as setWebviewState,
   updateActiveDiff,

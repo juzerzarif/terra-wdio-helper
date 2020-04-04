@@ -162,6 +162,10 @@ export function replaceWithLatest(snapshot: WdioSnapshot): void {
         fs.copyFileSync(resource.latestUri.fsPath, resource.referenceUri.fsPath);
         if (pathExists(resource.diffUri.fsPath)) {
           rimraf.sync(resource.diffUri.fsPath);
+          const parentDirectory: string = path.join(resource.diffUri.fsPath, '..');
+          if (isDirEmpty(parentDirectory)) {
+            rimraf.sync(parentDirectory);
+          }
         }
       }
     } catch (err) {

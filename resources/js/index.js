@@ -1,14 +1,12 @@
-import { getWebviewState, initialState, setWebviewState, updateScrollPosition } from './VSCodeWebApi';
+import { getWebviewState, initializeWebviewState, setWebviewState, updateScrollPosition } from './VSCodeWebApi';
 import { setOpacity, toggleDiffDisplay, toggleResourceDisplay } from './UIActions';
 
 import '../stylesheets/index.css';
 import 'beerslider/dist/BeerSlider.unmin.css';
 
-let state = getWebviewState();
-if (!state) {
-  setWebviewState(initialState);
-  state = initialState;
-}
+initializeWebviewState();
+
+const state = getWebviewState();
 document.getElementsByClassName('snapshot-container')[0].scroll(state.scrollPosition.left, state.scrollPosition.top);
 state.activeTabs.forEach((activeTab) => toggleResourceDisplay(activeTab.resourceId, activeTab.type));
 state.activeDiffs.forEach((activeDiff) => toggleDiffDisplay(activeDiff.resourceId, activeDiff.type));
