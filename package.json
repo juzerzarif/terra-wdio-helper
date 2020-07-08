@@ -20,12 +20,17 @@
   },
   "homepage": "https://github.com/juzerzarif/terra-wdio-helper/blob/master/README.md",
   "engines": {
-    "vscode": "^1.38.0"
+    "vscode": "^1.18.0"
   },
   "categories": [
     "Other"
   ],
-  "keywords": ["multi-root ready", "wdio", "terra-toolkit", "cerner"],
+  "keywords": [
+    "multi-root ready",
+    "wdio",
+    "terra-toolkit",
+    "cerner"
+  ],
   "galleryBanner": {
     "color": "#EC4F1F",
     "theme": "dark"
@@ -85,14 +90,23 @@
             "type": "string",
             "scope": "window",
             "default": "reference",
-            "enum": ["reference", "latest", "diff"],
+            "enum": [
+              "reference",
+              "latest",
+              "diff"
+            ],
             "description": "The tab that will be active upon initial disclosure of the snapshot webview."
           },
           "terraWdioHelper.defaultDiffOption": {
             "type": "string",
             "scope": "window",
             "default": "two-up",
-            "enum": ["default", "two-up", "slide", "onion"],
+            "enum": [
+              "default",
+              "two-up",
+              "slide",
+              "onion"
+            ],
             "description": "The diff option that will be selected by default when a diff tab is first activated."
           },
           "terraWdioHelper.testFolderPath": {
@@ -147,6 +161,7 @@
     }
   },
   "scripts": {
+    "clean:install": "rimraf node_modules && npm install",
     "vscode:prepublish": "npm run lint && npm run build:prod",
     "build:development": "webpack --mode development",
     "build:development:watch": "webpack --mode development --watch",
@@ -166,7 +181,7 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.11.7",
     "@types/rimraf": "^2.0.3",
-    "@types/vscode": "^1.38.0",
+    "@types/vscode": "^1.18.0",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
     "babel-loader": "^8.0.6",
