@@ -1,19 +1,16 @@
-import * as path from 'path';
+import { Uri, Webview } from 'vscode';
 
-import { ExtensionContext, Uri, Webview } from 'vscode';
-
+import ExtensionState from '../common/ExtensionState';
+import ResourceRetriever from '../common/ResourceRetriever';
+import WdioSnapshot from '../tree-view/WdioSnapshot';
 import {
   DiffFragmentOptions,
   EndFragmentOptions,
   LatestFragmentOptions,
   ReferenceFragmentOptions,
-  SnapshotResource,
-  SnapshotWebviewOptions,
   StartFragmentOptions,
-} from '../models/interfaces';
-
-import ContextStore from './ContextStore';
-import { pathExists } from './common';
+} from '../types';
+import { WdioResource } from '../types';
 
 const generateRandomString = (): string => {
   let nonce = '';
@@ -28,6 +25,8 @@ const getStartFragment = (options: StartFragmentOptions): string => {
   const title: string = options.title;
   const stylesheetUri: Uri = options.stylesheetUri;
   const nonce: string = options.nonce;
+  const defaultTab = ExtensionState.configuration.defaultSnapshotTab;
+  const defaultDiff = ExtensionState.configuration.defaultDiffOption;
 
   return `
   <!DOCTYPE html>
@@ -39,7 +38,7 @@ const getStartFragment = (options: StartFragmentOptions): string => {
       <link rel="stylesheet" type="text/css" href="${stylesheetUri}">
       <title>WDIO Snapshot Collection</title>
     </head>
-    <body>
+    <body data-webview-default-tab="${defaultTab}" data-webview-default-diff="${defaultDiff}">
       <div id="root">
         <h1 class="snapshot-title">${title}</h1>
         <div class="snapshot-container">
@@ -60,12 +59,12 @@ const getEndFragment = (options: EndFragmentOptions): string => {
 };
 
 const getReferenceFragment = (options: ReferenceFragmentOptions, webview: Webview): string => {
-  const referenceUri: Uri = webview.asWebviewUri(options.referenceUri);
+  const referenceUri: Uri = webview.asWebviewUri(options.reference.uri);
   const resourceId: string = options.resourceId;
 
-  if (pathExists(options.referenceUri.fsPath)) {
+  if (options.reference.exists) {
     return `
-    <div id="${resourceId}_reference" class="snapshot-box reference-box active">
+    <div id="${resourceId}_reference" class="snapshot-box reference-box">
       <img class="${resourceId}_reference_img" src="${referenceUri}?${generateRandomString()}" />
     </div>
     `;
@@ -80,10 +79,10 @@ const getReferenceFragment = (options: ReferenceFragmentOptions, webview: Webvie
 };
 
 const getLatestFragment = (options: LatestFragmentOptions, webview: Webview): string => {
-  const latestUri: Uri = webview.asWebviewUri(options.latestUri);
+  const latestUri: Uri = webview.asWebviewUri(options.latest.uri);
   const resourceId: string = options.resourceId;
 
-  if (pathExists(options.latestUri.fsPath)) {
+  if (options.latest.exists) {
     return `
     <div id="${resourceId}_latest" class="snapshot-box latest-box">
       <img class="${resourceId}_latest_img" src="${latestUri}?${generateRandomString()}" />
@@ -100,16 +99,12 @@ const getLatestFragment = (options: LatestFragmentOptions, webview: Webview): st
 };
 
 const getDiffFragment = (options: DiffFragmentOptions, webview: Webview): string => {
-  const referenceUri: Uri = webview.asWebviewUri(options.referenceUri);
-  const latestUri: Uri = webview.asWebviewUri(options.latestUri);
-  const diffUri: Uri = webview.asWebviewUri(options.diffUri);
+  const referenceUri: Uri = webview.asWebviewUri(options.reference.uri);
+  const latestUri: Uri = webview.asWebviewUri(options.latest.uri);
+  const diffUri: Uri = webview.asWebviewUri(options.diff.uri);
   const resourceId: string = options.resourceId;
 
-  if (
-    pathExists(options.referenceUri.fsPath) &&
-    pathExists(options.latestUri.fsPath) &&
-    pathExists(options.diffUri.fsPath)
-  ) {
+  if (options.reference.exists && options.latest.exists && options.diff.exists) {
     return `
     <!-- ${resourceId}_diff_section_start -->
     <div id="${resourceId}_diff" class="snapshot-box diff-box">
@@ -117,7 +112,7 @@ const getDiffFragment = (options: DiffFragmentOptions, webview: Webview): string
         <div id="${resourceId}_diff_default" class="diff-default">
           <img class="${resourceId}_diff_img" src="${diffUri}?${generateRandomString()}" />
         </div>
-        <div id="${resourceId}_diff_two-up" class="diff-two-up active">
+        <div id="${resourceId}_diff_two-up" class="diff-two-up">
           <img class="${resourceId}_reference_img" src="${referenceUri}?${generateRandomString()}" />
           <img class="${resourceId}_latest_img" src="${latestUri}?${generateRandomString()}" />
         </div>
@@ -139,7 +134,7 @@ const getDiffFragment = (options: DiffFragmentOptions, webview: Webview): string
       </div>
       <div class="diff-button-group">
         <button id="${resourceId}_diff_default_button" class="diff-button">Default</button>
-        <button id="${resourceId}_diff_two-up_button" class="diff-button active">2-Up</button>
+        <button id="${resourceId}_diff_two-up_button" class="diff-button">2-Up</button>
         <button id="${resourceId}_diff_slide_button" class="diff-button">Slide</button>
         <button id="${resourceId}_diff_onion_button" class="diff-button">Onion</button>
       </div>
@@ -159,18 +154,18 @@ const getDiffFragment = (options: DiffFragmentOptions, webview: Webview): string
   `;
 };
 
-const getResourceContainer = (resource: SnapshotResource, webview: Webview): string => {
-  let header = `${resource.locale} | ${resource.viewport}`;
-  if (pathExists(resource.diffUri.fsPath)) {
+const getResourceContainer = (resource: WdioResource, webview: Webview): string => {
+  let header = `${resource.locale} | ${resource.formFactor}`;
+  if (resource.diff.exists) {
     header = `🔴 ${header}`;
   }
-  const resourceId = `${resource.locale}_${resource.viewport.replace('_', '-')}`;
+  const resourceId = `${resource.locale}_${resource.formFactor.replace('_', '-')}`;
   const start = `
   <div class="resource-container">
     <h2 class="resource-header">${header}</h2>
     <div>
       <div class="tab-container">
-        <button id="${resourceId}_reference_tab" class="tab-button active">Reference</button>
+        <button id="${resourceId}_reference_tab" class="tab-button">Reference</button>
         <button id="${resourceId}_latest_tab" class="tab-button">Latest</button>
         <button id="${resourceId}_diff_tab" class="tab-button">Diff</button>
       </div>
@@ -183,13 +178,13 @@ const getResourceContainer = (resource: SnapshotResource, webview: Webview): str
 
   return `
   ${start}
-  ${getReferenceFragment({ referenceUri: resource.referenceUri, resourceId: resourceId }, webview)}
-  ${getLatestFragment({ latestUri: resource.latestUri, resourceId: resourceId }, webview)}
+  ${getReferenceFragment({ reference: resource.reference, resourceId: resourceId }, webview)}
+  ${getLatestFragment({ latest: resource.latest, resourceId: resourceId }, webview)}
   ${getDiffFragment(
     {
-      referenceUri: resource.referenceUri,
-      latestUri: resource.latestUri,
-      diffUri: resource.diffUri,
+      reference: resource.reference,
+      latest: resource.latest,
+      diff: resource.diff,
       resourceId: resourceId,
     },
     webview
@@ -198,25 +193,25 @@ const getResourceContainer = (resource: SnapshotResource, webview: Webview): str
   `;
 };
 
-const createHtmlForSnapshot = (snapshot: SnapshotWebviewOptions, webview: Webview): string => {
-  const context: ExtensionContext | null = ContextStore.getContext();
+const createHtmlForSnapshot = (snapshot: WdioSnapshot, webview: Webview): string => {
+  const context = ExtensionState.context;
   if (!context) {
     return '';
   }
 
-  const stylesheetPath = webview.asWebviewUri(
-    Uri.file(path.join(context.extensionPath, 'resources', 'dist', 'index.min.css'))
-  );
-  const scriptPath = webview.asWebviewUri(
-    Uri.file(path.join(context.extensionPath, 'resources', 'dist', 'index.min.js'))
-  );
+  const stylesheetPath = webview.asWebviewUri(Uri.file(ResourceRetriever.getDistFile('index.min.css') as string));
+  const scriptPath = webview.asWebviewUri(Uri.file(ResourceRetriever.getDistFile('index.min.js') as string));
   const nonce: string = generateRandomString();
 
-  const start: string = getStartFragment({ title: snapshot.title, stylesheetUri: stylesheetPath, nonce: nonce });
+  const start: string = getStartFragment({
+    title: snapshot.label as string,
+    stylesheetUri: stylesheetPath,
+    nonce: nonce,
+  });
   const end: string = getEndFragment({ scriptUri: scriptPath, nonce: nonce });
 
   let accumulator = start;
-  snapshot.resources.forEach((resource: SnapshotResource): void => {
+  snapshot.resources.forEach((resource: WdioResource): void => {
     accumulator += getResourceContainer(resource, webview);
   });
   accumulator += end;

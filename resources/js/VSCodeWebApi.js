@@ -4,13 +4,14 @@ const { getState, setState } = vscode;
 
 const getInitialActiveTabs = () => {
   const initialActiveTabs = [];
+  const defaultTab = document.body.getAttribute('data-webview-default-tab');
   const tabContainers = document.getElementsByClassName('tab-container');
   for (let i = 0; i < tabContainers.length; i++) {
     const tabId = tabContainers[i].children[0].id;
     const resourceId = tabId.match(/(.+)_reference_tab/)[1];
     initialActiveTabs.push({
       resourceId: resourceId,
-      type: 'reference',
+      type: defaultTab,
     });
   }
 
@@ -19,13 +20,14 @@ const getInitialActiveTabs = () => {
 
 const getInitialActiveDiffs = () => {
   const initialActiveDiffs = [];
+  const defaultDiff = document.body.getAttribute('data-webview-default-diff');
   const diffButtonContainers = document.getElementsByClassName('diff-button-group');
   for (let i = 0; i < diffButtonContainers.length; i++) {
     const buttonId = diffButtonContainers[i].children[0].id;
     const resourceId = buttonId.match(/(.+)_diff_default_button/)[1];
     initialActiveDiffs.push({
       resourceId: resourceId,
-      type: 'two-up',
+      type: defaultDiff,
     });
   }
 

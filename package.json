@@ -3,7 +3,7 @@
   "displayName": "Terra WDIO Helper",
   "description": "A tool to help analyze Terra WDIO test results",
   "icon": "resources/images/extension_icon.png",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "publisher": "juzerzarif",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
@@ -25,47 +25,48 @@
   "categories": [
     "Other"
   ],
+  "keywords": ["multi-root ready", "wdio", "terra-toolkit", "cerner"],
   "galleryBanner": {
     "color": "#EC4F1F",
     "theme": "dark"
   },
   "activationEvents": [
-    "*"
+    "onView:terraWdioHelper"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "terraWdioHelper.displaySnapshot",
+        "command": "terraWdioHelper.openSnapshot",
         "title": "Open Snapshot"
       },
       {
-        "command": "terraWdioHelper.deleteSnapshot",
-        "title": "Delete Snapshot",
+        "command": "terraWdioHelper.deleteResources",
+        "title": "Delete",
         "icon": {
           "dark": "resources/images/dark/delete_icon.svg",
           "light": "resources/images/light/delete_icon.svg"
         }
       },
       {
-        "command": "terraWdioHelper.deleteDiffSnapshot",
+        "command": "terraWdioHelper.deleteDiffResources",
         "title": "Delete diffs"
+      },
+      {
+        "command": "terraWdioHelper.deleteFolder",
+        "title": "Delete",
+        "icon": {
+          "dark": "resources/images/dark/delete_icon.svg",
+          "light": "resources/images/light/delete_icon.svg"
+        }
+      },
+      {
+        "command": "terraWdioHelper.deleteDiffFolder",
+        "title": "Delete diff"
       },
       {
         "command": "terraWdioHelper.replaceWithLatest",
         "title": "Replace reference with latest"
-      },
-      {
-        "command": "terraWdioHelper.deleteSpec",
-        "title": "Delete Spec",
-        "icon": {
-          "dark": "resources/images/dark/delete_icon.svg",
-          "light": "resources/images/light/delete_icon.svg"
-        }
-      },
-      {
-        "command": "terraWdioHelper.deleteDiffSpec",
-        "title": "Delete diffs"
       },
       {
         "command": "terraWdioHelper.refreshSnapshotTree",
@@ -80,10 +81,25 @@
       {
         "title": "Terra WDIO Helper",
         "properties": {
-          "terraWdioHelper.wdioTestFolderRelativePath": {
+          "terraWdioHelper.defaultSnapshotTab": {
             "type": "string",
+            "scope": "window",
+            "default": "reference",
+            "enum": ["reference", "latest", "diff"],
+            "description": "The tab that will be active upon initial disclosure of the snapshot webview."
+          },
+          "terraWdioHelper.defaultDiffOption": {
+            "type": "string",
+            "scope": "window",
+            "default": "two-up",
+            "enum": ["default", "two-up", "slide", "onion"],
+            "description": "The diff option that will be selected by default when a diff tab is first activated."
+          },
+          "terraWdioHelper.testFolderPath": {
+            "type": "string",
+            "scope": "resource",
             "default": "tests/wdio",
-            "description": "Path to the WDIO test folder relative to the workspace root. This folder must contain a __snapshots__ directory."
+            "description": "Path to the WDIO test folder relative to the workspace folder. This folder or its sub-folders must contain a __snapshots__ directory."
           }
         }
       }
@@ -98,26 +114,26 @@
       ],
       "view/item/context": [
         {
-          "command": "terraWdioHelper.deleteSnapshot",
-          "when": "view == terraWdioHelper && viewItem == wdioSnapshot",
+          "command": "terraWdioHelper.deleteResources",
+          "when": "viewItem == terraWdioSpec || viewItem == terraWdioSnapshot",
           "group": "inline"
         },
         {
-          "command": "terraWdioHelper.deleteDiffSnapshot",
-          "when": "view == terraWdioHelper && viewItem == wdioSnapshot"
+          "command": "terraWdioHelper.deleteDiffResources",
+          "when": "viewItem == terraWdioSpec || viewItem == terraWdioSnapshot"
+        },
+        {
+          "command": "terraWdioHelper.deleteFolder",
+          "when": "viewItem == terraWdioSpecGroup",
+          "group": "inline"
+        },
+        {
+          "command": "terraWdioHelper.deleteDiffFolder",
+          "when": "viewItem == terraWdioSpecGroup"
         },
         {
           "command": "terraWdioHelper.replaceWithLatest",
-          "when": "view == terraWdioHelper && viewItem == wdioSnapshot"
-        },
-        {
-          "command": "terraWdioHelper.deleteSpec",
-          "when": "view == terraWdioHelper && viewItem == wdioSpec",
-          "group": "inline"
-        },
-        {
-          "command": "terraWdioHelper.deleteDiffSpec",
-          "when": "view == terraWdioHelper && viewItem == wdioSpec"
+          "when": "viewItem == terraWdioSpec || viewItem == terraWdioSnapshot"
         }
       ]
     },
@@ -140,8 +156,8 @@
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
     "lint": "npm run lint:ts && npm run lint:js",
-    "lint:ts": "eslint . --ext .ts --fix",
-    "lint:js": "eslint . --ext .js --fix"
+    "lint:ts": "eslint . --ext .ts",
+    "lint:js": "eslint . --ext .js"
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",
@@ -160,7 +176,7 @@
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-sort-imports-es6-autofix": "^0.5.0",
-    "glob": "^7.1.5",
+    "glob": "^7.1.6",
     "mini-css-extract-plugin": "^0.8.0",
     "mocha": "^6.2.2",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
@@ -174,6 +190,7 @@
   },
   "dependencies": {
     "beerslider": "^1.0.3",
+    "fast-glob": "^3.2.4",
     "rimraf": "^3.0.0"
   }
 }

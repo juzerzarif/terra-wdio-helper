@@ -1,4 +1,4 @@
-import { getWebviewState, initializeWebviewState, setWebviewState, updateScrollPosition } from './VSCodeWebApi';
+import { getWebviewState, initializeWebviewState, updateScrollPosition } from './VSCodeWebApi';
 import { setOpacity, toggleDiffDisplay, toggleResourceDisplay } from './UIActions';
 
 import '../stylesheets/index.css';
