@@ -22,6 +22,7 @@ class WorkspaceFolderItem extends TreeItem {
     this.tooltip = folderName;
   }
 
+  label = '';
   contextValue = 'terraWdioWorkspaceFolder';
   iconPath = ResourceRetriever.getThemedIcon('workspace_folder_icon.svg');
 }

@@ -59,6 +59,7 @@ class WdioSpecGroup extends TreeItem {
     this.tooltip = this.label;
   }
 
+  label = '';
   contextValue = 'terraWdioSpecGroup';
 }
 

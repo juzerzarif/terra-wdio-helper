@@ -1,4 +1,4 @@
-import { EventEmitter, ProviderResult, TreeDataProvider } from 'vscode';
+import { EventEmitter, TreeDataProvider } from 'vscode';
 
 import ExtensionState from '../common/ExtensionState';
 import { WdioTreeItem } from '../types';
@@ -20,27 +20,33 @@ class WdioHelperTreeProvider implements TreeDataProvider<WdioTreeItem> {
     return element;
   }
 
-  getChildren(element?: Exclude<WdioTreeItem, WdioSnapshot>): ProviderResult<WdioTreeItem[]> {
+  getChildren(element?: Exclude<WdioTreeItem, WdioSnapshot>): WdioTreeItem[] {
+    let children: WdioTreeItem[];
     if (!element) {
       const items = WorkspaceFolderItem.getAllWorkspaceFolderItems();
       ExtensionState.workspaceFolderItems = items;
       if (items.length === 1) {
         return this.getChildren(items[0]);
       }
-      return items;
-    }
-    if (element instanceof WorkspaceFolderItem) {
+      children = items;
+    } else if (element instanceof WorkspaceFolderItem) {
       const items = WdioSpecGroup.getAllWdioSpecGroups(element);
       if (items.length === 1) {
         return this.getChildren(items[0]);
       }
-      return items;
-    }
-    if (element instanceof WdioSpecGroup) {
-      return WdioSpec.getAllWdioSpecs(element);
+      children = items;
+    } else if (element instanceof WdioSpecGroup) {
+      children = WdioSpec.getAllWdioSpecs(element);
+    } else {
+      children = WdioSnapshot.getAllWdioSnapshots(element);
     }
 
-    return WdioSnapshot.getAllWdioSnapshots(element);
+    return children.sort((childA, childB) => {
+      // Special case for '.' - should always be the first
+      if (childA.label === '.') return -1;
+      if (childB.label === '.') return 1;
+      return childA.label.localeCompare(childB.label, 'en', { numeric: true });
+    });
   }
 }
 
