@@ -53,24 +53,32 @@ export function activate(context: ExtensionContext): void {
       }
     }
   });
-  workspace.onDidChangeWorkspaceFolders(() => treeProvider.refresh(), null, context.subscriptions);
+  workspace.onDidChangeWorkspaceFolders(
+    () => {
+      ExtensionState.configureExtensionState(context);
+      treeProvider.refresh();
+    },
+    null,
+    context.subscriptions
+  );
 
   workspace.workspaceFolders?.forEach((folder) => {
     const testFolderPath = ExtensionState.configuration.testFolderPath[folder.uri.fsPath];
     const workspaceFolderItem = ExtensionState.workspaceFolderItems.find(
       (folderItem) => folderItem.resourceUri.fsPath === folder.uri.fsPath
     );
+    const refreshWdioSnapshots = (): void => {
+      treeProvider.refresh(workspaceFolderItem);
+      WdioWebviewPanel.updateWebviewPanels();
+    };
     const fsWatcher = workspace.createFileSystemWatcher(
       new RelativePattern(path.join(folder.uri.fsPath, testFolderPath), '**')
     );
-    fsWatcher.onDidChange(
-      () => {
-        treeProvider.refresh(workspaceFolderItem);
-        WdioWebviewPanel.updateWebviewPanels();
-      },
-      null,
-      context.subscriptions
-    );
+    // Need to add listeners for all three events because macOS doesn't fire change events on parent directories
+    // when a file is created/deleted 😍👍
+    fsWatcher.onDidCreate(refreshWdioSnapshots, null, context.subscriptions);
+    fsWatcher.onDidChange(refreshWdioSnapshots, null, context.subscriptions);
+    fsWatcher.onDidDelete(refreshWdioSnapshots, null, context.subscriptions);
   });
 
   context.subscriptions.push(

@@ -6,7 +6,6 @@ import { ExtensionConfiguration } from '../types';
 class ExtensionState {
   private static _configuration = {} as ExtensionConfiguration;
   private static _context: ExtensionContext;
-  private static _openSnapshots: string[] = [];
 
   static workspaceFolderItems: WorkspaceFolderItem[] = [];
 
@@ -16,10 +15,6 @@ class ExtensionState {
 
   static get context(): ExtensionContext {
     return this._context;
-  }
-
-  static get openSnapshots(): string[] {
-    return this._openSnapshots;
   }
 
   public static configureExtensionState(context: ExtensionContext): void {
@@ -33,19 +28,6 @@ class ExtensionState {
       const resourceConfig = workspace.getConfiguration('terraWdioHelper', folder.uri);
       this._configuration.testFolderPath[folder.uri.fsPath] = resourceConfig.get('testFolderPath') ?? 'tests/wdio';
     });
-  }
-
-  public static addOpenSnapshot(id: string): void {
-    if (!this.openSnapshots.includes(id)) {
-      this.openSnapshots.push(id);
-    }
-  }
-
-  public static removeOpenSnapshot(id: string): void {
-    const idIndex = this.openSnapshots.findIndex((_id) => _id === id);
-    if (idIndex >= 0) {
-      this.openSnapshots.splice(idIndex, 1);
-    }
   }
 }
 
