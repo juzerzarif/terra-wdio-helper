@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.3.1
+### Bug fixes
+- Refresh the tree correctly on macOS when snapshots are created/deleted
+- Sort snapshot items "numerically" (i.e. "2" < "10")
+
 ## 0.3.0
 #### Features
 - Add support for multi-root workspaces
