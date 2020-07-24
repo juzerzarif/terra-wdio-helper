@@ -36,6 +36,8 @@ const getInitialActiveDiffs = () => {
 
 const initializeWebviewState = () => {
   const savedState = getState();
+  const initialTabs = getInitialActiveTabs();
+  const initialDiffs = getInitialActiveDiffs();
 
   if (!savedState) {
     const initialState = {
@@ -43,37 +45,29 @@ const initializeWebviewState = () => {
         left: 0,
         top: 0,
       },
-      activeTabs: getInitialActiveTabs(),
-      activeDiffs: getInitialActiveDiffs(),
+      activeTabs: initialTabs,
+      activeDiffs: initialDiffs,
     };
     setState(initialState);
     return;
   }
 
-  /**
-   * Need to check if all the elements saved in the state are present in the DOM
-   * since there could've been changes in the filesystem that affected the DOM output
-   */
-  const newActiveTabs = [];
-  savedState.activeTabs.forEach((tab) => {
-    const tabId = `${tab.resourceId}_reference_tab`;
-    if (document.getElementById(tabId)) {
-      newActiveTabs.push(tab);
+  initialTabs.forEach((tab) => {
+    const savedTab = savedState.activeTabs.find((_tab) => _tab.resourceId === tab.resourceId);
+    if (savedTab) {
+      tab.type = savedTab.type;
     }
   });
-
-  const newActiveDiffs = [];
-  savedState.activeDiffs.forEach((diff) => {
-    const diffId = `${diff.resourceId}_diff_default`;
-    if (document.getElementById(diffId)) {
-      newActiveDiffs.push(diff);
+  initialDiffs.forEach((diff) => {
+    const savedDiff = savedState.activeDiffs.find((_diff) => _diff.resourceId === diff.resourceId);
+    if (savedDiff) {
+      diff.type = savedDiff.type;
     }
   });
-
   setState({
     ...savedState,
-    activeTabs: newActiveTabs,
-    activeDiffs: newActiveDiffs,
+    activeTabs: initialTabs,
+    activeDiffs: initialDiffs,
   });
 };
 

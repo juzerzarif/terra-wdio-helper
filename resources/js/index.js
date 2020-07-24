@@ -7,7 +7,14 @@ import 'beerslider/dist/BeerSlider.unmin.css';
 initializeWebviewState();
 
 const state = getWebviewState();
-document.getElementsByClassName('snapshot-container')[0].scroll(state.scrollPosition.left, state.scrollPosition.top);
+// Apparently the height isn't set properly until the first paint so gotta wait until then to scroll
+requestAnimationFrame(() =>
+  requestAnimationFrame(() => {
+    document
+      .getElementsByClassName('snapshot-container')[0]
+      .scroll(state.scrollPosition.left, state.scrollPosition.top);
+  })
+);
 state.activeTabs.forEach((activeTab) => toggleResourceDisplay(activeTab.resourceId, activeTab.type));
 state.activeDiffs.forEach((activeDiff) => toggleDiffDisplay(activeDiff.resourceId, activeDiff.type));
 
