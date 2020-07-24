@@ -9,7 +9,7 @@ import WdioSpecGroup from './WdioSpecGroup';
 import WorkspaceFolderItem from './WorkspaceFolder';
 
 class WdioHelperTreeProvider implements TreeDataProvider<WdioTreeItem> {
-  private readonly treeDataEventEmitter = new EventEmitter<WdioTreeItem>();
+  private readonly treeDataEventEmitter = new EventEmitter<WdioTreeItem | undefined>();
   public readonly onDidChangeTreeData = this.treeDataEventEmitter.event;
 
   refresh(element?: WorkspaceFolderItem): void {

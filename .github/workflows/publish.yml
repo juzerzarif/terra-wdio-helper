@@ -1,0 +1,54 @@
+name: Publish extension
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+
+
+jobs:
+  release:
+    name: Create a Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.head_commit.message, '🚀')
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Store tag name
+        run: |
+          tag_name="$(echo $COMMIT_MESSAGE | grep -oP "v\d+.\d+.\d+")"
+          echo $tag_name
+          echo "::set-env name=TAG_NAME::$tag_name"
+      - uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: ${{ env.TAG_NAME }}
+          body: See [CHANGELOG](https://github.com/juzerzarif/terra-wdio-helper/blob/master/CHANGELOG.md) for changes
+
+  publish:
+    name: Publish VSCode Extension
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.head_commit.message, '🚀')
+    strategy:
+      matrix:
+        node-version: [10.x]
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm i
+      - name: Install vsce
+        run: npm i -g vsce
+      - name: Publish extension
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}  
+        run: vsce publish -p $VSCE_PAT
