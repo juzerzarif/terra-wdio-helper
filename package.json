@@ -177,6 +177,7 @@
   "devDependencies": {
     "@babel/core": "^7.7.5",
     "@babel/preset-env": "^7.7.6",
+    "@types/fs-extra": "^9.0.1",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.11.7",
@@ -206,6 +207,7 @@
   "dependencies": {
     "beerslider": "^1.0.3",
     "fast-glob": "^3.2.4",
+    "fs-extra": "^9.0.1",
     "rimraf": "^3.0.0"
   }
 }

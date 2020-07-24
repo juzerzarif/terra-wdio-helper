@@ -1,6 +1,6 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
+import * as fs from 'fs-extra';
 import { TreeItem, TreeItemCollapsibleState, Uri, window } from 'vscode';
 
 import ExtensionState from '../common/ExtensionState';

@@ -1,6 +1,6 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
+import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import { Uri, workspace } from 'vscode';
 
@@ -76,7 +76,7 @@ export const replaceReferenceWithLatest = (item: WdioSnapshot | WdioSpec): void 
   item.resources.forEach((resource) => {
     const referenceDirectory = path.dirname(resource.reference.uri.fsPath);
     if (resource.latest.exists && exists(referenceDirectory)) {
-      fs.copyFileSync(resource.latest.uri.fsPath, resource.reference.uri.fsPath);
+      fs.copySync(resource.latest.uri.fsPath, resource.reference.uri.fsPath);
 
       if (resource.diff.exists) {
         deleteResource(resource.diff.uri.fsPath);
