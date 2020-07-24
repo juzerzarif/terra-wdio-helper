@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.3.2
+### Bug fixes
+- `Replace reference with latest` works with spec folders without erroring out 👍
+- Webview persists scroll state when hot reloading
+- New snapshots added to webview during a hot reload have the correct active tab
+
 ## 0.3.1
 ### Bug fixes
 - Refresh the tree correctly on macOS when snapshots are created/deleted
