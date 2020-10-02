@@ -16,6 +16,7 @@ A VSCode extension to help with analyzing test results, specifically screenshots
 
 This extension contributes the following settings:
 - `terraWdioHelper.defaultSnapshotTab`: The tab that will be active upon initial disclosure of the snapshot webview.
+- `terraWdioHelper.fallbackSnapshotTab`: The snapshot tab to fallback to if the default snapshot tab is empty.
 - `terraWdioHelper.defaultDiffOption`: The diff option that will be selected by default when a diff tab is first activated.
 - `terraWdioHelper.testFolderPath`: Relative path to the WDIO test folder. This setting can be applied at a folder level for multi-root workspaces.
 

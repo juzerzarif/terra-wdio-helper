@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.4.0
+### Features
+- Add configuration option to show a fallback snapshot tab if the default tab is empty
+
 ## 0.3.2
 ### Bug fixes
 - `Replace reference with latest` works with spec folders without erroring out 👍
