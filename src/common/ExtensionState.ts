@@ -22,6 +22,7 @@ class ExtensionState {
 
     const windowConfig = workspace.getConfiguration('terraWdioHelper');
     this._configuration.defaultSnapshotTab = windowConfig.get('defaultSnapshotTab') ?? 'reference';
+    this._configuration.fallbackSnapshotTab = windowConfig.get('fallbackSnapshotTab') ?? 'reference';
     this._configuration.defaultDiffOption = windowConfig.get('defaultDiffOption') ?? 'two-up';
     this._configuration.testFolderPath = {};
     workspace.workspaceFolders?.forEach((folder) => {

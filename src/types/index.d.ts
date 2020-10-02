@@ -11,6 +11,7 @@ declare type DiffOptionType = 'default' | 'two-up' | 'slide' | 'onion';
 
 declare interface ExtensionConfiguration {
   defaultSnapshotTab: SnapshotTabType;
+  fallbackSnapshotTab: SnapshotTabType;
   defaultDiffOption: DiffOptionType;
   testFolderPath: {
     [key: string]: string;

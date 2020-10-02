@@ -97,6 +97,17 @@
             ],
             "description": "The tab that will be active upon initial disclosure of the snapshot webview."
           },
+          "terraWdioHelper.fallbackSnapshotTab": {
+            "type": "string",
+            "scope": "window",
+            "default": "reference",
+            "enum": [
+              "reference",
+              "latest",
+              "diff"
+            ],
+            "description": "The snapshot tab to fallback to if the default snapshot tab is empty."
+          },
           "terraWdioHelper.defaultDiffOption": {
             "type": "string",
             "scope": "window",

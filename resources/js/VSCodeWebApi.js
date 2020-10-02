@@ -5,13 +5,15 @@ const { getState, setState } = vscode;
 const getInitialActiveTabs = () => {
   const initialActiveTabs = [];
   const defaultTab = document.body.getAttribute('data-webview-default-tab');
+  const fallbackTab = document.body.getAttribute('data-webview-fallback-tab');
   const tabContainers = document.getElementsByClassName('tab-container');
   for (let i = 0; i < tabContainers.length; i++) {
-    const tabId = tabContainers[i].children[0].id;
-    const resourceId = tabId.match(/(.+)_reference_tab/)[1];
+    const resourceId = tabContainers[i].getAttribute('data-resourceid');
+    const defaultTabExists =
+      tabContainers[i].querySelector(`[id*="_${defaultTab}_tab"]`).getAttribute('data-exists') === 'true';
     initialActiveTabs.push({
       resourceId: resourceId,
-      type: defaultTab,
+      type: defaultTabExists ? defaultTab : fallbackTab,
     });
   }
 

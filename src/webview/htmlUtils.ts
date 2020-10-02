@@ -26,6 +26,7 @@ const getStartFragment = (options: StartFragmentOptions): string => {
   const stylesheetUri: Uri = options.stylesheetUri;
   const nonce: string = options.nonce;
   const defaultTab = ExtensionState.configuration.defaultSnapshotTab;
+  const fallbackTab = ExtensionState.configuration.fallbackSnapshotTab;
   const defaultDiff = ExtensionState.configuration.defaultDiffOption;
 
   return `
@@ -38,7 +39,7 @@ const getStartFragment = (options: StartFragmentOptions): string => {
       <link rel="stylesheet" type="text/css" href="${stylesheetUri}">
       <title>WDIO Snapshot Collection</title>
     </head>
-    <body data-webview-default-tab="${defaultTab}" data-webview-default-diff="${defaultDiff}">
+    <body data-webview-default-tab="${defaultTab}" data-webview-fallback-tab="${fallbackTab}" data-webview-default-diff="${defaultDiff}">
       <div id="root">
         <h1 class="snapshot-title">${title}</h1>
         <div class="snapshot-container">
@@ -164,10 +165,10 @@ const getResourceContainer = (resource: WdioResource, webview: Webview): string 
   <div class="resource-container">
     <h2 class="resource-header">${header}</h2>
     <div>
-      <div class="tab-container">
-        <button id="${resourceId}_reference_tab" class="tab-button">Reference</button>
-        <button id="${resourceId}_latest_tab" class="tab-button">Latest</button>
-        <button id="${resourceId}_diff_tab" class="tab-button">Diff</button>
+      <div class="tab-container" data-resourceid="${resourceId}">
+        <button id="${resourceId}_reference_tab" class="tab-button" data-exists=${resource.reference.exists}>Reference</button>
+        <button id="${resourceId}_latest_tab" class="tab-button" data-exists=${resource.latest.exists}>Latest</button>
+        <button id="${resourceId}_diff_tab" class="tab-button" data-exists=${resource.diff.exists}>Diff</button>
       </div>
   `;
   const end = `
