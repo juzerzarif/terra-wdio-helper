@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.5.0
+- Dependency updates
+
 ## 0.4.1
 No updates - pleasing the VSCode Marketplace versioning gods
 
