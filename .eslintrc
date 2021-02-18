@@ -31,14 +31,16 @@
         "ignoreMemberSort": false,
         "memberSyntaxSortOrder": ["all", "single", "multiple", "none"]
       }
-    ]
+    ],
+    "@typescript-eslint/consistent-type-imports": "error"
   },
   "overrides": [
     {
       "files": ["**/*.js"],
       "rules": {
         "@typescript-eslint/no-var-requires": "off",
-        "@typescript-eslint/explicit-function-return-type": "off"
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off"
       }
     },
     {

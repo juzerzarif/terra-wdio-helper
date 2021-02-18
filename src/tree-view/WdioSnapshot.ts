@@ -1,12 +1,13 @@
 import * as path from 'path';
 
-import { TreeItem, TreeItemCollapsibleState, Uri } from 'vscode';
+import { TreeItem, TreeItemCollapsibleState } from 'vscode';
+import type { Uri } from 'vscode';
 
 import ResourceRetriever from '../common/ResourceRetriever';
-import { WdioResource } from '../types';
 import { buildUriMap, getFiles } from '../common/utils';
+import type { WdioResource } from '../types';
 
-import WdioSpec from './WdioSpec';
+import type WdioSpec from './WdioSpec';
 
 class WdioSnapshot extends TreeItem {
   static getAllWdioSnapshots(wdioSpec: WdioSpec): WdioSnapshot[] {

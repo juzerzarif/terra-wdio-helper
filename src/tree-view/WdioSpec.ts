@@ -4,10 +4,10 @@ import * as fg from 'fast-glob';
 import { TreeItem, TreeItemCollapsibleState, Uri } from 'vscode';
 
 import ResourceRetriever from '../common/ResourceRetriever';
-import { WdioResource } from '../types';
 import { buildUriMap } from '../common/utils';
+import type { WdioResource } from '../types';
 
-import WdioSpecGroup from './WdioSpecGroup';
+import type WdioSpecGroup from './WdioSpecGroup';
 
 class WdioSpec extends TreeItem {
   static getAllWdioSpecs(specGroup: WdioSpecGroup): WdioSpec[] {

@@ -1,6 +1,7 @@
 import * as path from 'path';
 
-import { TreeItem, TreeItemCollapsibleState, Uri, workspace } from 'vscode';
+import { TreeItem, TreeItemCollapsibleState, workspace } from 'vscode';
+import type { Uri } from 'vscode';
 
 import ResourceRetriever from '../common/ResourceRetriever';
 

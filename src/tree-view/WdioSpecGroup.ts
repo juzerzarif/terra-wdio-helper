@@ -7,7 +7,7 @@ import ExtensionState from '../common/ExtensionState';
 import ResourceRetriever from '../common/ResourceRetriever';
 import { exists } from '../common/utils';
 
-import WorkspaceFolderItem from './WorkspaceFolder';
+import type WorkspaceFolderItem from './WorkspaceFolder';
 
 class WdioSpecGroup extends TreeItem {
   static getAllWdioSpecGroups(workspaceFolder: WorkspaceFolderItem): WdioSpecGroup[] {

@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { ThemedIcon } from '../types';
+import type { ThemedIcon } from '../types';
 
 import ExtensionState from './ExtensionState';
 

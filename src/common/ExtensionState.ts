@@ -1,7 +1,8 @@
-import { ExtensionContext, workspace } from 'vscode';
+import { workspace } from 'vscode';
+import type { ExtensionContext } from 'vscode';
 
-import WorkspaceFolderItem from '../tree-view/WorkspaceFolder';
-import { ExtensionConfiguration } from '../types';
+import type WorkspaceFolderItem from '../tree-view/WorkspaceFolder';
+import type { ExtensionConfiguration } from '../types';
 
 class ExtensionState {
   private static _configuration = {} as ExtensionConfiguration;

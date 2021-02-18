@@ -1,7 +1,8 @@
-import { EventEmitter, TreeDataProvider } from 'vscode';
+import { EventEmitter } from 'vscode';
+import type { TreeDataProvider } from 'vscode';
 
 import ExtensionState from '../common/ExtensionState';
-import { WdioTreeItem } from '../types';
+import type { WdioTreeItem } from '../types';
 
 import WdioSnapshot from './WdioSnapshot';
 import WdioSpec from './WdioSpec';

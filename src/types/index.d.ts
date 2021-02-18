@@ -1,9 +1,9 @@
-import { Uri } from 'vscode';
+import type { Uri } from 'vscode';
 
-import WdioSnapshot from '../tree-view/WdioSnapshot';
-import WdioSpec from '../tree-view/WdioSpec';
-import WdioSpecGroup from '../tree-view/WdioSpecGroup';
-import WorkspaceFolderItem from '../tree-view/WorkspaceFolder';
+import type WdioSnapshot from '../tree-view/WdioSnapshot';
+import type WdioSpec from '../tree-view/WdioSpec';
+import type WdioSpecGroup from '../tree-view/WdioSpecGroup';
+import type WorkspaceFolderItem from '../tree-view/WorkspaceFolder';
 
 declare type SnapshotTabType = 'reference' | 'latest' | 'diff';
 

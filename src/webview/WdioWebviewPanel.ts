@@ -1,12 +1,13 @@
 import * as path from 'path';
 
 import * as fg from 'fast-glob';
-import { Uri, ViewColumn, WebviewPanel, window } from 'vscode';
+import { Uri, ViewColumn, window } from 'vscode';
+import type { WebviewPanel } from 'vscode';
 
 import ResourceRetriever from '../common/ResourceRetriever';
-import WdioSnapshot from '../tree-view/WdioSnapshot';
-import { WdioResource } from '../types';
 import { buildUriMap } from '../common/utils';
+import type WdioSnapshot from '../tree-view/WdioSnapshot';
+import type { WdioResource } from '../types';
 
 import { createHtmlForSnapshot } from './htmlUtils';
 

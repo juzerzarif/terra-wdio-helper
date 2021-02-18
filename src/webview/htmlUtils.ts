@@ -1,16 +1,17 @@
-import { Uri, Webview } from 'vscode';
+import { Uri } from 'vscode';
+import type { Webview } from 'vscode';
 
 import ExtensionState from '../common/ExtensionState';
 import ResourceRetriever from '../common/ResourceRetriever';
-import WdioSnapshot from '../tree-view/WdioSnapshot';
-import {
+import type WdioSnapshot from '../tree-view/WdioSnapshot';
+import type {
   DiffFragmentOptions,
   EndFragmentOptions,
   LatestFragmentOptions,
   ReferenceFragmentOptions,
   StartFragmentOptions,
 } from '../types';
-import { WdioResource } from '../types';
+import type { WdioResource } from '../types';
 
 const generateRandomString = (): string => {
   let nonce = '';

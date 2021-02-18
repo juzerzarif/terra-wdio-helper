@@ -4,9 +4,9 @@ import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import { Uri, workspace } from 'vscode';
 
-import WdioSnapshot from '../tree-view/WdioSnapshot';
-import WdioSpec from '../tree-view/WdioSpec';
-import { UriMap } from '../types';
+import type WdioSnapshot from '../tree-view/WdioSnapshot';
+import type WdioSpec from '../tree-view/WdioSpec';
+import type { UriMap } from '../types';
 
 import ExtensionState from './ExtensionState';
 

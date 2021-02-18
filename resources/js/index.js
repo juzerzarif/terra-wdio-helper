@@ -43,7 +43,7 @@ for (let i = 0; i < diffOptionButtons.length; i++) {
 const onionDiffBoxes = document.querySelectorAll('[id$="_diff_onion"]');
 for (let i = 0; i < onionDiffBoxes.length; i++) {
   const imageContainer = onionDiffBoxes[i].getElementsByClassName('diff-onion-image')[0];
-  onionDiffBoxes[i].getElementsByClassName('onion-slider-input')[0].addEventListener('input', function() {
+  onionDiffBoxes[i].getElementsByClassName('onion-slider-input')[0].addEventListener('input', function () {
     setOpacity(imageContainer, this.value);
   });
   setOpacity(imageContainer, 50);

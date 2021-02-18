@@ -1,15 +1,16 @@
 import * as path from 'path';
 
-import { Disposable, ExtensionContext, RelativePattern, commands, window, workspace } from 'vscode';
+import { RelativePattern, commands, window, workspace } from 'vscode';
+import type { Disposable, ExtensionContext } from 'vscode';
 
 import ExtensionState from './common/ExtensionState';
 import WdioHelperTreeProvider from './tree-view/WdioHelperTreeProvider';
-import WdioSnapshot from './tree-view/WdioSnapshot';
-import WdioSpec from './tree-view/WdioSpec';
-import WdioSpecGroup from './tree-view/WdioSpecGroup';
 import WdioWebviewPanel from './webview/WdioWebviewPanel';
-import { WdioTreeItem } from './types';
 import { deleteResource, deleteWdioResources, replaceReferenceWithLatest } from './common/utils';
+import type WdioSnapshot from './tree-view/WdioSnapshot';
+import type WdioSpec from './tree-view/WdioSpec';
+import type WdioSpecGroup from './tree-view/WdioSpecGroup';
+import type { WdioTreeItem } from './types';
 
 export function activate(context: ExtensionContext): void {
   ExtensionState.configureExtensionState(context);
@@ -41,8 +42,10 @@ export function activate(context: ExtensionContext): void {
     'terraWdioHelper.deleteDiffFolder',
     (item: WdioSpecGroup): void => deleteResource(path.join(item.resourceUri.fsPath, 'diff'))
   );
-  const refreshTreeDisposable: Disposable = commands.registerCommand('terraWdioHelper.refreshSnapshotTree', (): void =>
-    treeProvider.refresh()
+  const refreshTreeDisposable: Disposable = commands.registerCommand(
+    'terraWdioHelper.refreshSnapshotTree',
+    treeProvider.refresh,
+    treeProvider
   );
 
   workspace.onDidChangeConfiguration((event) => {
