@@ -53,6 +53,7 @@ export function activate(context: ExtensionContext): void {
       ExtensionState.configureExtensionState(context);
       if (event.affectsConfiguration('terraWdioHelper.testFolderPath')) {
         treeProvider.refresh();
+        WdioWebviewPanel.updateAllOpenWebviews();
       }
     }
   });
@@ -67,12 +68,12 @@ export function activate(context: ExtensionContext): void {
 
   workspace.workspaceFolders?.forEach((folder) => {
     const testFolderPath = ExtensionState.configuration.testFolderPath[folder.uri.fsPath];
-    const workspaceFolderItem = ExtensionState.workspaceFolderItems.find(
-      (folderItem) => folderItem.resourceUri.fsPath === folder.uri.fsPath
-    );
     const refreshWdioSnapshots = (): void => {
+      const workspaceFolderItem = ExtensionState.workspaceFolderItems.find(
+        (folderItem) => folderItem.resourceUri.fsPath === folder.uri.fsPath
+      );
       treeProvider.refresh(workspaceFolderItem);
-      WdioWebviewPanel.updateWebviewPanels();
+      WdioWebviewPanel.updateAllOpenWebviews(workspaceFolderItem);
     };
     const fsWatcher = workspace.createFileSystemWatcher(
       new RelativePattern(path.join(folder.uri.fsPath, testFolderPath), '**')

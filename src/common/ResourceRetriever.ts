@@ -1,32 +1,34 @@
 import * as path from 'path';
 
+import { Uri } from 'vscode';
+
 import type { ThemedIcon } from '../types';
 
 import ExtensionState from './ExtensionState';
 
 class ResourceRetriever {
-  public static getThemedIcon(filename: string): ThemedIcon | undefined {
+  public static getThemedIcon(filename: string): ThemedIcon {
     if (!ExtensionState.context) {
-      return;
+      throw new Error('getThemedIcon was called before extension context was set');
     }
     return {
-      light: path.join(ExtensionState.context.extensionPath, 'resources/images/light', filename),
-      dark: path.join(ExtensionState.context.extensionPath, 'resources/images/dark', filename),
+      light: Uri.file(path.join(ExtensionState.context.extensionPath, 'resources/images/light', filename)),
+      dark: Uri.file(path.join(ExtensionState.context.extensionPath, 'resources/images/dark', filename)),
     };
   }
 
-  public static getIcon(filename: string): string | undefined {
+  public static getIcon(filename: string): Uri {
     if (!ExtensionState.context) {
-      return;
+      throw new Error('getIcon was called before extension context was set');
     }
-    return path.join(ExtensionState.context.extensionPath, 'resources/images', filename);
+    return Uri.file(path.join(ExtensionState.context.extensionPath, 'resources/images', filename));
   }
 
-  public static getDistFile(relativePath: string): string | undefined {
+  public static getDistFile(relativePath: string): Uri {
     if (!ExtensionState.context) {
-      return;
+      throw new Error('getDistFile was called before extension context was set');
     }
-    return path.join(ExtensionState.context.extensionPath, 'resources/dist', relativePath);
+    return Uri.file(path.join(ExtensionState.context.extensionPath, 'resources/dist', relativePath));
   }
 }
 

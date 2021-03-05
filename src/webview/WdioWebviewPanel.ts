@@ -1,84 +1,186 @@
 import * as path from 'path';
 
-import * as fg from 'fast-glob';
+import * as fglob from 'fast-glob';
+import * as fs from 'fs-extra';
 import { Uri, ViewColumn, window } from 'vscode';
-import type { WebviewPanel } from 'vscode';
+import { nanoid } from 'nanoid';
+import type { Webview, WebviewPanel } from 'vscode';
 
+import ExtensionState from '../common/ExtensionState';
 import ResourceRetriever from '../common/ResourceRetriever';
-import { buildUriMap } from '../common/utils';
 import type WdioSnapshot from '../tree-view/WdioSnapshot';
-import type { WdioResource } from '../types';
+import type WorkspaceFolderItem from '../tree-view/WorkspaceFolder';
+import type { WdioWebview } from '../types';
 
-import { createHtmlForSnapshot } from './htmlUtils';
+import html from './webview.template.html';
+
+interface PanelImageData extends WdioWebview.ImageData {
+  fsPath: string;
+}
 
 class WdioWebviewPanel {
-  private static openWebviewPanels: WdioWebviewPanel[] = [];
+  /**
+   * =========== static =============
+   */
+  private static openPanels: WdioWebviewPanel[] = [];
 
-  static createOrShow(snapshot: WdioSnapshot): void {
-    const column = window.activeTextEditor?.viewColumn;
-    const existingPanel = this.openWebviewPanels.find((panel) => panel.id === snapshot.id);
-
+  /**
+   * Create a webview panel for a WDIO snapshot or reveal one that already exists
+   *
+   * @param snapshot - WDIO snapshot tree item
+   */
+  public static createOrShow(snapshot: WdioSnapshot): void {
+    const existingPanel = this.openPanels.find((panel) => panel.id === snapshot.id);
     if (existingPanel) {
-      existingPanel.panel.reveal(column);
+      existingPanel.panel.reveal();
       return;
     }
-    const newPanel = window.createWebviewPanel(
-      'terraWdioSnapshotPanel',
-      snapshot.label as string,
-      column ?? ViewColumn.Active,
-      { enableScripts: true }
-    );
-    newPanel.iconPath = Uri.file(ResourceRetriever.getIcon('snapshot_icon.png') as string);
-    const snapshotPanel = new WdioWebviewPanel(newPanel, snapshot);
-    snapshotPanel.updateWebview();
-    this.openWebviewPanels.push(snapshotPanel);
+    const newPanel = new WdioWebviewPanel(snapshot);
+    newPanel.postDataToWebview();
+    this.openPanels.push(newPanel);
   }
 
-  static updateWebviewPanels(): void {
-    this.openWebviewPanels.forEach((panel) => {
-      const litmusUri = panel.snapshot.resources[0].reference.uri;
-      const snapshotFile = path.basename(litmusUri.fsPath);
-      const specFolder = path.basename(path.dirname(litmusUri.fsPath));
-      const cwd = path.join(panel.snapshot.baseUri.fsPath, 'reference');
-      const allSnapshotFiles = fg
-        .sync(`**/${fg.escapePath(specFolder)}/${fg.escapePath(snapshotFile)}`, { cwd })
-        .map((relativePath) => path.join(cwd, relativePath));
+  /**
+   * Update the snapshots in all open webviews, and possibly close an open webview if no snapshots for it exist.
+   */
+  public static updateAllOpenWebviews(workspaceFolderItem?: WorkspaceFolderItem): void {
+    const workspacePath = workspaceFolderItem?.resourceUri.fsPath;
 
-      panel.snapshot.resources = [];
-      allSnapshotFiles.forEach((snapshot) => {
-        const normalizedPath = path.normalize(snapshot);
-        panel.snapshot.resources.push(this.createResourceFromPath(normalizedPath, panel.snapshot.baseUri.fsPath));
-      });
-      panel.updateWebview();
+    this.openPanels.forEach((webviewPanel) => {
+      const { reference: _reference, locale, formFactor } = webviewPanel.webviewSnapshot.resources[0];
+      const reference = _reference as PanelImageData;
+      if (workspacePath && !reference.fsPath.startsWith(workspacePath)) {
+        return;
+      }
+
+      const snapshotFilename = path.basename(reference.fsPath);
+      const specFolderName = path.basename(path.dirname(reference.fsPath));
+      const referenceFolderPath = reference.fsPath.substring(
+        0,
+        reference.fsPath.indexOf(`${path.sep}${[locale, formFactor, specFolderName, snapshotFilename].join(path.sep)}`)
+      );
+      const snapshotFolderPath = path.dirname(referenceFolderPath);
+      const allSnapshotFiles = fglob.sync(`**/${specFolderName}/${snapshotFilename}`, { cwd: referenceFolderPath });
+
+      if (!allSnapshotFiles.length) {
+        webviewPanel.panel.dispose();
+      } else {
+        webviewPanel.webviewSnapshot.resources = this.buildWebviewSnapshotResources(
+          allSnapshotFiles,
+          snapshotFolderPath,
+          webviewPanel.panel.webview
+        );
+        webviewPanel.postDataToWebview();
+      }
     });
   }
 
-  private static createResourceFromPath(_path: string, base: string): WdioResource {
-    const relativePath = path.relative(path.join(base, 'reference'), _path);
-    const localeFormFactorPath = path.dirname(path.dirname(relativePath));
-    const formFactor = path.basename(localeFormFactorPath);
-    const locale = path.dirname(localeFormFactorPath);
+  private static buildWebviewSnapshotResources(
+    relativeSnapshotPaths: string[],
+    snapshotFolderPath: string,
+    webview: Webview
+  ): WdioWebview.Resource[] {
+    return relativeSnapshotPaths.map((relativeSnapshotPath) => {
+      const localeFormFactorPath = path.dirname(path.dirname(relativeSnapshotPath));
+      const formFactor = path.basename(localeFormFactorPath);
+      const locale = path.dirname(localeFormFactorPath);
 
+      return {
+        locale,
+        formFactor,
+        reference: this.buildImageData(path.join(snapshotFolderPath, 'reference', relativeSnapshotPath), webview),
+        latest: this.buildImageData(path.join(snapshotFolderPath, 'latest', relativeSnapshotPath), webview),
+        diff: this.buildImageData(path.join(snapshotFolderPath, 'diff', relativeSnapshotPath), webview),
+      };
+    });
+  }
+
+  private static buildImageData(imagePath: string, webview: Webview) {
+    const imageExists = fs.existsSync(imagePath);
+    const imageUri = Uri.file(imagePath);
     return {
-      locale,
-      formFactor,
-      reference: buildUriMap(path.join(base, 'reference', relativePath)),
-      latest: buildUriMap(path.join(base, 'latest', relativePath)),
-      diff: buildUriMap(path.join(base, 'diff', relativePath)),
+      src: `${webview.asWebviewUri(imageUri)}?${nanoid()}`,
+      fsPath: imageUri.fsPath,
+      exists: imageExists,
     };
   }
 
-  private constructor(readonly panel: WebviewPanel, readonly snapshot: WdioSnapshot) {
-    this.id = snapshot.id as string;
-    panel.onDidDispose(() => {
-      WdioWebviewPanel.openWebviewPanels = WdioWebviewPanel.openWebviewPanels.filter((panel) => panel.id !== this.id);
+  /**
+   * =========== instance =============
+   */
+  public readonly id: string;
+  private readonly panel: WebviewPanel;
+  private webviewSnapshot: WdioWebview.Snapshot = {} as WdioWebview.Snapshot;
+  private pendingPostMessage: WdioWebview.Data | null = null;
+  private webviewReady = false;
+
+  private constructor(snapshot: WdioSnapshot) {
+    this.id = snapshot.id;
+
+    this.panel = window.createWebviewPanel('terraWdioSnapshotPanel', snapshot.label, ViewColumn.Active, {
+      enableScripts: true,
     });
+    this.panel.iconPath = ResourceRetriever.getIcon('snapshot_icon.png');
+    this.panel.webview.html = this.buildWebviewHTML();
+    this.panel.onDidDispose(
+      () => {
+        WdioWebviewPanel.openPanels = WdioWebviewPanel.openPanels.filter((panel) => panel !== this);
+      },
+      null,
+      ExtensionState.context.subscriptions
+    );
+    this.panel.onDidChangeViewState(
+      ({ webviewPanel }) => {
+        if (!webviewPanel.visible) {
+          this.webviewReady = false;
+        }
+      },
+      null,
+      ExtensionState.context.subscriptions
+    );
+    this.panel.webview.onDidReceiveMessage(
+      (message: WdioWebview.Message) => {
+        this.webviewReady = !!message.ready;
+        if (this.webviewReady && this.pendingPostMessage) {
+          this.panel.webview.postMessage(this.pendingPostMessage);
+          this.pendingPostMessage = null;
+        }
+      },
+      null,
+      ExtensionState.context.subscriptions
+    );
+
+    this.webviewSnapshot = {
+      name: snapshot.label,
+      resources: snapshot.resources.map((resource) => ({
+        locale: resource.locale,
+        formFactor: resource.formFactor,
+        reference: WdioWebviewPanel.buildImageData(resource.reference.uri.fsPath, this.panel.webview),
+        latest: WdioWebviewPanel.buildImageData(resource.latest.uri.fsPath, this.panel.webview),
+        diff: WdioWebviewPanel.buildImageData(resource.diff.uri.fsPath, this.panel.webview),
+      })),
+    };
   }
 
-  private readonly id: string;
+  private buildWebviewHTML() {
+    const stylesheetUri = this.panel.webview.asWebviewUri(ResourceRetriever.getDistFile('bundle.css'));
+    const scriptUri = this.panel.webview.asWebviewUri(ResourceRetriever.getDistFile('bundle.js'));
+    return html
+      .replace('{{title}}', this.panel.title)
+      .replace('{{stylesheet_uri}}', stylesheetUri.toString())
+      .replace('{{script_uri}}', scriptUri.toString());
+  }
 
-  private updateWebview(): void {
-    this.panel.webview.html = createHtmlForSnapshot(this.snapshot, this.panel.webview);
+  private postDataToWebview() {
+    const webviewData: WdioWebview.Data = {
+      snapshotData: this.webviewSnapshot,
+      extensionConfig: ExtensionState.configuration,
+    };
+    if (this.webviewReady) {
+      this.panel.webview.postMessage(webviewData);
+    } else {
+      this.pendingPostMessage = webviewData;
+    }
   }
 }
 

@@ -54,6 +54,7 @@ class WdioSnapshot extends TreeItem {
     };
   }
 
+  id: string;
   label = '';
   contextValue = 'terraWdioSnapshot';
   iconPath = ResourceRetriever.getIcon('snapshot_icon.png');
