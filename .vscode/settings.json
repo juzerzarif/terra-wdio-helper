@@ -6,7 +6,7 @@
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "files.eol": "\r\n",
+    "files.eol": "\n",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": true
     }

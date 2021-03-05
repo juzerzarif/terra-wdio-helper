@@ -1,0 +1,28 @@
+{
+  "snapshotData": {
+    "name": "Webview Test",
+    "resources": [
+      {
+        "locale": "en",
+        "formFactor": "chrome_medium",
+        "reference": {
+          "src": "images/reference/test.jpg",
+          "exists": true
+        },
+        "latest": {
+          "src": "images/latest/test.jpg",
+          "exists": false
+        },
+        "diff": {
+          "src": "images/diff/test.jpg",
+          "exists": true
+        }
+      }
+    ]
+  },
+  "extensionConfig": {
+    "defaultDiffOption": "slide",
+    "defaultSnapshotTab": "diff",
+    "fallbackSnapshotTab": "reference"
+  }
+}

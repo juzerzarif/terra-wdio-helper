@@ -65,3 +65,34 @@ declare interface StartFragmentOptions {
   stylesheetUri: Uri;
   nonce: string;
 }
+
+declare namespace WdioWebview {
+  declare interface ImageData {
+    src: string;
+    exists: boolean;
+  }
+
+  declare interface Resource {
+    locale: string;
+    formFactor: string;
+    reference: ImageData;
+    latest: ImageData;
+    diff: ImageData;
+  }
+
+  declare interface Snapshot {
+    name: string;
+    resources: Resource[];
+  }
+
+  declare type ExtensionConfig = Omit<ExtensionConfiguration, 'testFolderPath'>;
+
+  declare interface Data {
+    snapshotData: Snapshot;
+    extensionConfig: ExtensionConfig;
+  }
+
+  declare interface Message {
+    ready?: boolean;
+  }
+}
