@@ -1,7 +1,8 @@
+/* istanbul ignore file */
 import * as path from 'path';
 
 import { RelativePattern, commands, window, workspace } from 'vscode';
-import type { Disposable, ExtensionContext } from 'vscode';
+import type { ExtensionContext } from 'vscode';
 
 import ExtensionState from './common/ExtensionState';
 import WdioHelperTreeProvider from './tree-view/WdioHelperTreeProvider';
@@ -17,35 +18,22 @@ export function activate(context: ExtensionContext): void {
   const treeProvider: WdioHelperTreeProvider = new WdioHelperTreeProvider();
   window.createTreeView<WdioTreeItem>('terraWdioHelper', { treeDataProvider: treeProvider, showCollapseAll: true });
 
-  const openSnapshotDisposable: Disposable = commands.registerCommand(
-    'terraWdioHelper.openSnapshot',
-    WdioWebviewPanel.createOrShow,
-    WdioWebviewPanel
-  );
-  const deleteResourcesDisposable: Disposable = commands.registerCommand(
-    'terraWdioHelper.deleteResources',
-    (item: WdioSpec | WdioSnapshot): void => deleteWdioResources(item)
-  );
-  const deleteDiffResourcesDisposable: Disposable = commands.registerCommand(
-    'terraWdioHelper.deleteDiffResources',
-    (item: WdioSpec | WdioSnapshot): void => deleteWdioResources(item, true)
-  );
-  const replaceWithLatestDisposable: Disposable = commands.registerCommand(
-    'terraWdioHelper.replaceWithLatest',
-    replaceReferenceWithLatest
-  );
-  const deleteFolderDisposable: Disposable = commands.registerCommand(
-    'terraWdioHelper.deleteFolder',
-    (item: WdioSpecGroup): void => deleteResource(item.resourceUri.fsPath)
-  );
-  const deleteDiffFolderDisposable: Disposable = commands.registerCommand(
-    'terraWdioHelper.deleteDiffFolder',
-    (item: WdioSpecGroup): void => deleteResource(path.join(item.resourceUri.fsPath, 'diff'))
-  );
-  const refreshTreeDisposable: Disposable = commands.registerCommand(
-    'terraWdioHelper.refreshSnapshotTree',
-    treeProvider.refresh,
-    treeProvider
+  context.subscriptions.push(
+    commands.registerCommand('terraWdioHelper.openSnapshot', WdioWebviewPanel.createOrShow, WdioWebviewPanel),
+    commands.registerCommand('terraWdioHelper.deleteResources', (item: WdioSpec | WdioSnapshot) =>
+      deleteWdioResources(item)
+    ),
+    commands.registerCommand('terraWdioHelper.deleteDiffResources', (item: WdioSpec | WdioSnapshot) =>
+      deleteWdioResources(item, true)
+    ),
+    commands.registerCommand('terraWdioHelper.replaceWithLatest', replaceReferenceWithLatest),
+    commands.registerCommand('terraWdioHelper.deleteFolder', (item: WdioSpecGroup) =>
+      deleteResource(item.resourceUri.fsPath)
+    ),
+    commands.registerCommand('terraWdioHelper.deleteDiffFolder', (item: WdioSpecGroup) =>
+      deleteResource(path.join(item.resourceUri.fsPath, 'diff'))
+    ),
+    commands.registerCommand('terraWdioHelper.refreshSnapshotTree', treeProvider.refresh, treeProvider)
   );
 
   workspace.onDidChangeConfiguration((event) => {
@@ -84,14 +72,4 @@ export function activate(context: ExtensionContext): void {
     fsWatcher.onDidChange(refreshWdioSnapshots, null, context.subscriptions);
     fsWatcher.onDidDelete(refreshWdioSnapshots, null, context.subscriptions);
   });
-
-  context.subscriptions.push(
-    openSnapshotDisposable,
-    deleteResourcesDisposable,
-    deleteDiffResourcesDisposable,
-    replaceWithLatestDisposable,
-    deleteFolderDisposable,
-    deleteDiffFolderDisposable,
-    refreshTreeDisposable
-  );
 }

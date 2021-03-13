@@ -57,7 +57,7 @@ class WdioWebviewPanel {
       const specFolderName = path.basename(path.dirname(reference.fsPath));
       const referenceFolderPath = reference.fsPath.substring(
         0,
-        reference.fsPath.indexOf(`${path.sep}${[locale, formFactor, specFolderName, snapshotFilename].join(path.sep)}`)
+        reference.fsPath.indexOf(path.join(path.sep, locale, formFactor, specFolderName, snapshotFilename))
       );
       const snapshotFolderPath = path.dirname(referenceFolderPath);
       const allSnapshotFiles = fglob.sync(`**/${specFolderName}/${snapshotFilename}`, { cwd: referenceFolderPath });
@@ -131,6 +131,7 @@ class WdioWebviewPanel {
     );
     this.panel.onDidChangeViewState(
       ({ webviewPanel }) => {
+        /* istanbul ignore else */
         if (!webviewPanel.visible) {
           this.webviewReady = false;
         }
@@ -141,6 +142,7 @@ class WdioWebviewPanel {
     this.panel.webview.onDidReceiveMessage(
       (message: WdioWebview.Message) => {
         this.webviewReady = !!message.ready;
+        /* istanbul ignore else */
         if (this.webviewReady && this.pendingPostMessage) {
           this.panel.webview.postMessage(this.pendingPostMessage);
           this.pendingPostMessage = null;

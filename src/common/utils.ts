@@ -3,21 +3,13 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import { Uri, workspace } from 'vscode';
+import type { WorkspaceFolder } from 'vscode';
 
 import type WdioSnapshot from '../tree-view/WdioSnapshot';
 import type WdioSpec from '../tree-view/WdioSpec';
 import type { UriMap } from '../types';
 
 import ExtensionState from './ExtensionState';
-
-export const exists = (path: string): boolean => {
-  try {
-    fs.accessSync(path);
-  } catch {
-    return false;
-  }
-  return true;
-};
 
 export const getDirectories = (root: string): string[] => {
   return fs.readdirSync(root).filter((item) => fs.lstatSync(path.join(root, item)).isDirectory());
@@ -41,12 +33,12 @@ export const buildUriMap = (uri: Uri | string): UriMap => {
   }
   return {
     uri: resolvedUri,
-    exists: exists(resolvedUri.fsPath),
+    exists: fs.existsSync(resolvedUri.fsPath),
   };
 };
 
 export const deleteResource = (resourcePath: string): void => {
-  const workspaceRoot = workspace.getWorkspaceFolder(Uri.file(resourcePath))?.uri.fsPath as string;
+  const workspaceRoot = (workspace.getWorkspaceFolder(Uri.file(resourcePath)) as WorkspaceFolder).uri.fsPath;
   const testFolderPath = ExtensionState.configuration.testFolderPath[workspaceRoot];
   const absoluteTestFolderPath = path.join(workspaceRoot, testFolderPath);
   const parentDirectory = path.dirname(resourcePath);
@@ -75,7 +67,7 @@ export const deleteWdioResources = (item: WdioSnapshot | WdioSpec, diffOnly?: bo
 export const replaceReferenceWithLatest = (item: WdioSnapshot | WdioSpec): void => {
   item.resources.forEach((resource) => {
     const referenceDirectory = path.dirname(resource.reference.uri.fsPath);
-    if (resource.latest.exists && exists(referenceDirectory)) {
+    if (resource.latest.exists && fs.existsSync(referenceDirectory)) {
       fs.copySync(resource.latest.uri.fsPath, resource.reference.uri.fsPath);
 
       if (resource.diff.exists) {

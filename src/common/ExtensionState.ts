@@ -1,5 +1,6 @@
 import { workspace } from 'vscode';
 import type { ExtensionContext } from 'vscode';
+import type { ReadonlyDeep } from 'type-fest';
 
 import type WorkspaceFolderItem from '../tree-view/WorkspaceFolder';
 import type { ExtensionConfiguration } from '../types';
@@ -10,7 +11,7 @@ class ExtensionState {
 
   static workspaceFolderItems: WorkspaceFolderItem[] = [];
 
-  static get configuration(): ExtensionConfiguration {
+  static get configuration(): ReadonlyDeep<ExtensionConfiguration> {
     return this._configuration;
   }
 

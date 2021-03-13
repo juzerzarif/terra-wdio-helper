@@ -1,7 +1,8 @@
 import * as path from 'path';
 
 import * as fg from 'fast-glob';
-import { TreeItem, TreeItemCollapsibleState, Uri } from 'vscode';
+import { TreeItem, TreeItemCollapsibleState } from 'vscode';
+import type { Uri } from 'vscode';
 
 import ResourceRetriever from '../common/ResourceRetriever';
 import { buildUriMap } from '../common/utils';
@@ -37,14 +38,8 @@ class WdioSpec extends TreeItem {
     return wdioSpecs.sort((specA, specB) => specA.label.localeCompare(specB.label, 'en', { numeric: true }));
   }
 
-  private static buildId(baseUri: Uri | string, label: string): string {
-    let resolvedFsPath: string;
-    if (baseUri instanceof Uri) {
-      resolvedFsPath = baseUri.fsPath;
-    } else {
-      resolvedFsPath = baseUri;
-    }
-    return Buffer.from(path.join(resolvedFsPath, label)).toString('base64');
+  private static buildId(baseUri: Uri, label: string): string {
+    return Buffer.from(path.join(baseUri.fsPath, label)).toString('base64');
   }
 
   constructor(public readonly label: string, public readonly baseUri: Uri) {

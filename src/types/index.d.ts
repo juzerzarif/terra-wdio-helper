@@ -5,6 +5,14 @@ import type WdioSpec from '../tree-view/WdioSpec';
 import type WdioSpecGroup from '../tree-view/WdioSpecGroup';
 import type WorkspaceFolderItem from '../tree-view/WorkspaceFolder';
 
+declare global {
+  // Object.keys monkey patch
+  interface ObjectConstructor {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    keys<T>(obj: T): T extends object ? (keyof T)[] : never;
+  }
+}
+
 declare type SnapshotTabType = 'reference' | 'latest' | 'diff';
 
 declare type DiffOptionType = 'default' | 'two-up' | 'slide' | 'onion';

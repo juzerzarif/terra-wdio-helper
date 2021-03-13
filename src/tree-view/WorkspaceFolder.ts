@@ -8,7 +8,7 @@ import ResourceRetriever from '../common/ResourceRetriever';
 class WorkspaceFolderItem extends TreeItem {
   public static getAllWorkspaceFolderItems = (): WorkspaceFolderItem[] => {
     if (workspace.workspaceFolders) {
-      return workspace.workspaceFolders?.map((folder) => {
+      return workspace.workspaceFolders.map((folder) => {
         return new WorkspaceFolderItem(folder.uri);
       });
     }

@@ -1,7 +1,6 @@
 import * as path from 'path';
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import type { Uri } from 'vscode';
 
 import ResourceRetriever from '../common/ResourceRetriever';
 import { buildUriMap, getFiles } from '../common/utils';
@@ -21,8 +20,7 @@ class WdioSnapshot extends TreeItem {
       snapshots.forEach((snapshot) => {
         const snapshotId = this.buildId(wdioSpec.id as string, snapshot);
         const existingSnapshot = wdioSnapshots.find((wdioSnapshot) => wdioSnapshot.id === snapshotId);
-        const snapshotToUpdate =
-          existingSnapshot ?? new WdioSnapshot(snapshot, wdioSpec.baseUri, wdioSpec.id as string);
+        const snapshotToUpdate = existingSnapshot ?? new WdioSnapshot(snapshot, wdioSpec.id as string);
         snapshotToUpdate.addResource(specResource);
 
         if (!existingSnapshot) {
@@ -38,7 +36,7 @@ class WdioSnapshot extends TreeItem {
     return Buffer.from(`${parentId}-${filename}`).toString('base64');
   }
 
-  constructor(filename: string, readonly baseUri: Uri, parentId: string) {
+  constructor(filename: string, parentId: string) {
     super(filename, TreeItemCollapsibleState.None);
 
     this._filename = filename;
@@ -61,7 +59,7 @@ class WdioSnapshot extends TreeItem {
   resources: WdioResource[] = [];
   private _filename: string;
 
-  private addResource(specResource: WdioResource): void {
+  addResource(specResource: WdioResource): void {
     const reference = buildUriMap(path.join(specResource.reference.uri.fsPath, this._filename));
     const latest = buildUriMap(path.join(specResource.latest.uri.fsPath, this._filename));
     const diff = buildUriMap(path.join(specResource.diff.uri.fsPath, this._filename));
