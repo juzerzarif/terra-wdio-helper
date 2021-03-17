@@ -25,9 +25,6 @@
           const nativeWidth = latestImg.naturalWidth;
           const nativeHeight = latestImg.naturalHeight;
           const imageHeight = (nativeHeight/nativeWidth) * contentRect.width;
-          const topOffset = (contentRect.height - imageHeight)/2;
-          sliderBorder.style.height = `${imageHeight}px`;
-          sliderBorder.style.top = `${topOffset}px`;
           sliderBorder.style.setProperty('--thumb-height', `${imageHeight}px`);
         }
       });
@@ -44,7 +41,7 @@
   <div class="absolute h-full flex">
     <img class="object-contain max-h-full" src={latest} alt="Latest snapshot" bind:this={latestImg} />
     <input 
-      class="slider-border absolute w-full appearance-none bg-transparent focus:outline-none" 
+      class="slider-border absolute w-full h-0 top-1/2 appearance-none bg-transparent focus:outline-none" 
       type="range" 
       min={0}
       max={100}

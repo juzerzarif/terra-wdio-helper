@@ -26,6 +26,7 @@ export const getWebviewData = (): WebviewDataStores => {
   window.addEventListener('message', ({ data }: { data: WebviewData }) => {
     data.snapshotData && snapshotData.set(data.snapshotData);
     data.extensionConfig && extensionConfig.set(data.extensionConfig);
+    /* istanbul ignore else */
     if (data.snapshotData || data.extensionConfig) {
       console.log('message received', data);
     }
@@ -37,7 +38,7 @@ export const getWebviewData = (): WebviewDataStores => {
 /**
  * Returns an action to sync the scroll position of a container with the saved webview state
  */
-export const createScrollSync = (): ((container: HTMLElement) => void) => {
+export const createScrollSync = (): ((container: HTMLElement) => { destroy: VoidFunction }) => {
   const scrollPosition = vsCodeWritable<{ top: number; left: number }>('scroll-position', { top: 0, left: 0 });
   return (container: HTMLElement) => {
     // Layout isn't yet calculated when the action is called
@@ -48,7 +49,7 @@ export const createScrollSync = (): ((container: HTMLElement) => void) => {
       scrollPosition.set({ top, left });
     };
     container.addEventListener('scroll', scrollListener);
-    return () => window.removeEventListener('scroll', scrollListener);
+    return { destroy: () => container.removeEventListener('scroll', scrollListener) };
   };
 };
 
@@ -68,6 +69,7 @@ export const isCurrentThemeDark = (): Readable<boolean> => {
   const darkTheme = writable(isVsCodeThemeDark());
 
   const observer = new MutationObserver(([mutation]) => {
+    /* istanbul ignore else */
     if (mutation.type === 'attributes' && mutation.attributeName === VSCODE_THEME_ATTR) {
       darkTheme.set(isVsCodeThemeDark());
     }

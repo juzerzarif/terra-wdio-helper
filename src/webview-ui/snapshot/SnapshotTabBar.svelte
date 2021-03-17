@@ -17,7 +17,7 @@
 </script>
 
 <div class="border-b dark:border-white dark:border-opacity-20 relative">
-  <div>
+  <div role="tablist">
     {#each ['reference', 'latest', 'diff'] as tab}
       <button 
         class="text-sm font-medium uppercase w-28 btn" 

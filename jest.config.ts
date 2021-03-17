@@ -2,6 +2,7 @@ export default {
   collectCoverage: true,
   collectCoverageFrom: ['src/**/*.ts', 'src/**/*.svelte'],
   coverageDirectory: 'coverage',
+  coveragePathIgnorePatterns: ['src/types'],
   coverageReporters: ['json', 'html', 'text'],
   coverageThreshold: {
     global: {
@@ -16,6 +17,8 @@ export default {
   },
   preset: 'ts-jest',
   roots: [process.cwd()],
-  testEnvironment: 'node',
+  setupFiles: ['mutationobserver-shim'],
+  setupFilesAfterEnv: ['./jest.setup.ts'],
+  testEnvironment: 'jsdom',
   testMatch: ['**/tests/**/*.test.ts'],
 };
