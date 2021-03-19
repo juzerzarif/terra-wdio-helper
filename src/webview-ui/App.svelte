@@ -42,7 +42,7 @@
       <h1 class="text-2xl italic font-medium flex">{$snapshotData.name}</h1>
       {#if diffExists} <DiffBadge /> {/if}
     </div>
-    <div class="flex-grow overflow-auto p-4 pb-14" use:syncScroll>
+    <div data-testid="content" class="flex-grow overflow-auto p-4 pb-14" use:syncScroll>
       {#each $snapshotData.resources as resource}
         {#key `${resource.locale}-${resource.formFactor}`}
           <SnapshotContainer {resource} />

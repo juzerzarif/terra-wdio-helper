@@ -4,4 +4,6 @@
   export let diff: string;
 </script>
 
-<Image src={diff} alt="Default diff" />
+<div data-testid="default-diff" class="h-full w-full">
+  <Image src={diff} alt="Default diff" />
+</div>

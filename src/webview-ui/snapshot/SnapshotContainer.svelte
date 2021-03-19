@@ -16,6 +16,7 @@
   const initialTab = resource[defaultSnapshotTab].exists ? defaultSnapshotTab : fallbackSnapshotTab;
   const containerId = `${locale}-${formFactor}`;
   const activeTab = vsCodeWritable<TabType>(`${containerId}-active-tab`, initialTab);
+  const tabIds = { reference: `${containerId}-reference`, latest: `${containerId}-latest`, diff: `${containerId}-diff` };
 </script>
 
 <div class=" mb-8 last:mb-0 border-b last:border-b-0" data-snapshot-container>
@@ -23,16 +24,16 @@
     <h2 class="text-2xl font-medium mr-2.5">{resource.locale} | {resource.formFactor}</h2>
     {#if resource.diff.exists} <DiffBadge /> {/if}
   </div>
-  <SnapshotTabBar bind:activeTab={$activeTab} />
+  <SnapshotTabBar tabIds={tabIds} bind:activeTab={$activeTab} />
   <div class="p-5 content">
     <div class={$activeTab === 'diff' && resource.diff.exists ? 'h-full w-full' : 'tab-container'}>
-      <SnapshotTab exists={resource.reference.exists} active={$activeTab === 'reference'}>
+      <SnapshotTab id={tabIds.reference} exists={resource.reference.exists} active={$activeTab === 'reference'}>
         <Image src={resource.reference.src} alt="Reference snapshot" />
       </SnapshotTab>
-      <SnapshotTab exists={resource.latest.exists} active={$activeTab === 'latest'}>
+      <SnapshotTab id={tabIds.latest} exists={resource.latest.exists} active={$activeTab === 'latest'}>
         <Image src={resource.latest.src} alt="Latest snapshot" />
       </SnapshotTab>
-      <SnapshotTab exists={resource.diff.exists} active={$activeTab === 'diff'}>
+      <SnapshotTab id={tabIds.diff} exists={resource.diff.exists} active={$activeTab === 'diff'}>
         <DiffContainer id={containerId} reference={resource.reference.src} latest={resource.latest.src} diff={resource.diff.src} />
       </SnapshotTab>
     </div>

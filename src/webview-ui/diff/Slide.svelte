@@ -20,11 +20,15 @@
   $: {
     if (latestImg) {
       resizeObserver?.disconnect();
-      resizeObserver = new ResizeObserver(([{ contentRect }]) => {
+      /**
+       * No real value in unit testing resize logic with canned values.
+       * Testing consideration here would be to verify that the assumptions made about 
+       * naturalHeight, naturalWidth, and contentRect are correct in a real browser environment.
+       */
+      resizeObserver = new ResizeObserver(/* istanbul ignore next */([{ contentRect }]: ResizeObserverEntry[]) => {
         if (latestImg && sliderBorder) {
-          const nativeWidth = latestImg.naturalWidth;
-          const nativeHeight = latestImg.naturalHeight;
-          const imageHeight = (nativeHeight/nativeWidth) * contentRect.width;
+          const { naturalHeight, naturalWidth } = latestImg;
+          const imageHeight = (naturalHeight/naturalWidth) * contentRect.width;
           sliderBorder.style.setProperty('--thumb-height', `${imageHeight}px`);
         }
       });
@@ -34,7 +38,7 @@
   }
 </script>
 
-<div class="h-full w-full relative flex justify-center">
+<div data-testid="slide-diff" class="h-full w-full relative flex justify-center">
   <div class="absolute h-full flex">
     <img class="object-contain  max-h-full" src={reference} alt="Reference snaphsot" />
   </div>
@@ -50,11 +54,12 @@
       disabled
     />
     <input 
-      class="compare-slider absolute w-full appearance-none focus:outline-none h-0" 
-      type="range" 
-      min={0} 
-      max={100} 
-      bind:value={$compareSliderValue} 
+      class="compare-slider absolute w-full appearance-none focus:outline-none h-0"
+      type="range"
+      aria-label="Snapshot comparison slider"
+      min={0}
+      max={100}
+      bind:value={$compareSliderValue}
     />
   </div>
 </div>

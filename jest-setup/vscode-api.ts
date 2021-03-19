@@ -1,4 +1,4 @@
-export default {};
+export {};
 
 const mockVsCodeApi = {
   getState: jest.fn(),

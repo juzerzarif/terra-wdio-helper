@@ -1,10 +1,9 @@
 const path = require('path');
 
-const sveltePreprocess = require('svelte-preprocess');
-const tailwind = require('tailwindcss');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const postcssNested = require('postcss-nested');
 const CSSMinimizerPlugin = require('css-minimizer-webpack-plugin');
+
+const svelteConfig = require('./svelte.config');
 
 module.exports = (env, argv) => {
   const webviewTest = !!env.WEBVIEW_TEST;
@@ -44,11 +43,7 @@ module.exports = (env, argv) => {
               },
               emitCss: true,
               hotReload: development,
-              preprocess: sveltePreprocess({
-                postcss: {
-                  plugins: [tailwind, postcssNested],
-                },
-              }),
+              ...svelteConfig,
             },
           },
         },

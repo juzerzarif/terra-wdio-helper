@@ -4,7 +4,7 @@
   import Slide from "./Slide.svelte";
   import Onion from "./Onion.svelte";
   import { vsCodeWritable } from "../vscodeWebviewApi";
-  import { getContext, SvelteComponent } from "svelte";
+  import { getContext } from "svelte";
   import type { ExtensionConfiguration } from "../../types";
 
   export let id: string;

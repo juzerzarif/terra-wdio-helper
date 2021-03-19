@@ -3,12 +3,13 @@
 
   export let exists = true;
   export let active = true;
+  export let id: string;
 </script>
 
-{#if exists}
-  <div class={`h-full w-full ${!active ? 'hidden' : ''}`}>
+<div data-testid={id} {id} class={`h-full w-full ${!active ? 'hidden' : ''}`} role="tabpanel">
+  {#if exists}
     <slot />
-  </div>
-{:else}
-  <NoResource hidden={!active} />
-{/if}
+  {:else}
+    <NoResource />
+  {/if}
+</div>

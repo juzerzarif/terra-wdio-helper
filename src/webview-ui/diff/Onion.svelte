@@ -1,6 +1,4 @@
 <script lang="ts">
-import { getContext } from "svelte";
-
   import { vsCodeWritable } from "../vscodeWebviewApi";
 
   export let id: string;
@@ -15,7 +13,7 @@ import { getContext } from "svelte";
   }
 </script>
 
-<div class="image-container relative">
+<div data-testid="onion-diff" class="image-container relative">
   <img class="absolute h-full w-full object-scale-down" src={reference} alt="Reference snaphsot" />
   <img class="absolute h-full w-full object-scale-down" src={latest} alt="Latest snapshot" bind:this={latestImg} />
 </div>
