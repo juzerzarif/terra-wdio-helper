@@ -21,7 +21,7 @@ jobs:
         run: |
           tag_name="$(echo $COMMIT_MESSAGE | grep -oP "v\d+.\d+.\d+")"
           echo $tag_name
-          echo "::set-env name=TAG_NAME::$tag_name"
+          echo "TAG_NAME=$tag_name" >> $GITHUB_ENV
       - uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -36,7 +36,7 @@ jobs:
     if: startsWith(github.event.head_commit.message, '🚀')
     strategy:
       matrix:
-        node-version: [10.x]
+        node-version: [12.x]
     
     steps:
       - uses: actions/checkout@v2
@@ -45,7 +45,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: npm i
+        run: npm ci
       - name: Install vsce
         run: npm i -g vsce
       - name: Publish extension
