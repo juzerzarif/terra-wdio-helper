@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.6.0
+- Webview is now cybernetically enhanced 🤖👌
+- Reduced layout thrashing when a webview hot reloads during a test run
+
 ## 0.5.0
 - Dependency updates
 

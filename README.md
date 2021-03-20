@@ -32,4 +32,4 @@ If and when you find bugs in the extension, please log an issue to this reposito
 
 Must utilize terra-toolkit's WDIO utility and configuration to provide the snapshot directory structure expected by the extension.
 
-Minimum required version of VSCode: 1.18.0
+Minimum required version of VSCode: 1.38.0

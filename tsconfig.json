@@ -4,7 +4,6 @@
 		"forceConsistentCasingInFileNames": true,
 		"importHelpers": true,
 		"importsNotUsedAsValues": "error",
-		"noEmit": true,
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
 		"noImplicitThis": true,

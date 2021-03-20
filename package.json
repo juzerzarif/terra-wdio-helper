@@ -3,7 +3,7 @@
   "displayName": "Terra WDIO Helper",
   "description": "A tool to help analyze Terra WDIO test results",
   "icon": "resources/images/extension_icon.png",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "publisher": "juzerzarif",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/juzerzarif/terra-wdio-helper/blob/master/README.md",
   "engines": {
-    "vscode": "^1.18.0"
+    "vscode": "^1.38.0"
   },
   "categories": [
     "Other"
@@ -172,12 +172,11 @@
     }
   },
   "scripts": {
-    "clean:install": "rimraf node_modules && npm install",
-    "vscode:prepublish": "npm run lint && npm run build:prod",
+    "clean:install": "rimraf node_modules package-lock.json && npm install",
+    "vscode:prepublish": "npm run lint && npm run test && npm run build:prod",
     "build:development": "webpack --mode development",
-    "build:development:watch": "webpack --mode development --watch",
     "build:prod": "webpack --mode production",
-    "validate": "tsc -p ./",
+    "validate": "tsc -p . --noEmit",
     "pretest": "npm run validate",
     "test": "jest",
     "lint": "npm run lint:ts && npm run lint:js",
@@ -197,7 +196,7 @@
     "@types/mock-fs": "^4.13.0",
     "@types/node": "^12.20.4",
     "@types/rimraf": "^2.0.3",
-    "@types/vscode": "^1.54.0",
+    "@types/vscode": "1.38.0",
     "@typescript-eslint/eslint-plugin": "^4.17.0",
     "@typescript-eslint/parser": "^4.17.0",
     "css-loader": "^5.1.1",
@@ -236,7 +235,6 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "beerslider": "^1.0.3",
     "fast-glob": "^3.2.4",
     "fs-extra": "^9.0.1",
     "nanoid": "^3.1.20",
