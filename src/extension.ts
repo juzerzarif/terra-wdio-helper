@@ -57,11 +57,16 @@ export function activate(context: ExtensionContext): void {
   workspace.workspaceFolders?.forEach((folder) => {
     const testFolderPath = ExtensionState.configuration.testFolderPath[folder.uri.fsPath];
     const refreshWdioSnapshots = (): void => {
-      const workspaceFolderItem = ExtensionState.workspaceFolderItems.find(
-        (folderItem) => folderItem.resourceUri.fsPath === folder.uri.fsPath
-      );
-      treeProvider.refresh(workspaceFolderItem);
-      WdioWebviewPanel.updateAllOpenWebviews(workspaceFolderItem);
+      /**
+       * Scoping a refresh to a workspace folder when there is only one workspace folder is pointless but also
+       * will not work for refreshing the tree view because there's no actual WorkspaceFolderItem in the tree in that case.
+       */
+      const scopeToWorkspace = ExtensionState.workspaceFolderItems.length > 1;
+      const scopedWorkspaceFolder = scopeToWorkspace
+        ? ExtensionState.workspaceFolderItems.find((folderItem) => folderItem.resourceUri.fsPath === folder.uri.fsPath)
+        : undefined;
+      treeProvider.refresh(scopedWorkspaceFolder);
+      WdioWebviewPanel.updateAllOpenWebviews(scopedWorkspaceFolder);
     };
     const fsWatcher = workspace.createFileSystemWatcher(
       new RelativePattern(path.join(folder.uri.fsPath, testFolderPath), '**')
