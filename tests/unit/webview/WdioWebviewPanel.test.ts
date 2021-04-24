@@ -13,6 +13,7 @@ jest.mock('../../../src/common/ResourceRetriever', () => ({
   getIcon: jest.fn((path) => path),
   getThemedIcon: jest.fn((path) => path),
   getDistFile: jest.fn((path) => path),
+  getFont: jest.fn((path) => path),
 }));
 
 const mockWindow = mocked(window);

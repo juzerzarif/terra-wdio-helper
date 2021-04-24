@@ -55,4 +55,20 @@ describe('ResourceRetriever', () => {
       );
     });
   });
+
+  describe('font file', () => {
+    it('should return a font file uri when the extension context is set', () => {
+      mockExtensionContext({ extensionPath: '/mock/extension/path' });
+      expect(ResourceRetriever.getFont('font.woff')).toEqual(
+        Uri.file('/mock/extension/path/resources/fonts/font.woff')
+      );
+    });
+
+    it('should throw an error when the extension context is not set', () => {
+      mockExtensionContext(undefined);
+      expect(() => ResourceRetriever.getFont('font.woff')).toThrow(
+        'getFont was called before extension context was set'
+      );
+    });
+  });
 });

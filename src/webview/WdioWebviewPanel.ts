@@ -165,12 +165,14 @@ class WdioWebviewPanel {
   }
 
   private buildWebviewHTML() {
+    const fontUri = this.panel.webview.asWebviewUri(ResourceRetriever.getFont('balsamiq-sans-v3-latin-700.woff'));
     const stylesheetUri = this.panel.webview.asWebviewUri(ResourceRetriever.getDistFile('bundle.css'));
     const scriptUri = this.panel.webview.asWebviewUri(ResourceRetriever.getDistFile('bundle.js'));
     return html
-      .replace('{{title}}', this.panel.title)
-      .replace('{{stylesheet_uri}}', stylesheetUri.toString())
-      .replace('{{script_uri}}', scriptUri.toString());
+      .replace(/{{title}}/g, this.panel.title)
+      .replace(/{{font_uri}}/g, fontUri.toString())
+      .replace(/{{stylesheet_uri}}/g, stylesheetUri.toString())
+      .replace(/{{script_uri}}/g, scriptUri.toString());
   }
 
   private postDataToWebview() {

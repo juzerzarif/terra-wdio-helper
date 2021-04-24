@@ -30,6 +30,13 @@ class ResourceRetriever {
     }
     return Uri.file(path.join(ExtensionState.context.extensionPath, 'resources/dist', relativePath));
   }
+
+  public static getFont(filename: string): Uri {
+    if (!ExtensionState.context) {
+      throw new Error('getFont was called before extension context was set');
+    }
+    return Uri.file(path.join(ExtensionState.context.extensionPath, 'resources/fonts', filename));
+  }
 }
 
 export default ResourceRetriever;
