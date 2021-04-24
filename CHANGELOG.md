@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.6.2
+### Bug fixes
+- Font for "Resource Does Not Exist" text on no resource view doesn't pop in on first reveal
+- Reference and latest images are center aligned in the Two-Up diff view
+
 ## 0.6.1
 ### Bug fixes
 - Tree view refresh works correctly when there is only one workspace folder
