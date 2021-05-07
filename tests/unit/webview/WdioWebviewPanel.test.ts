@@ -7,13 +7,20 @@ import ExtensionState from '../../../src/common/ExtensionState';
 import WdioSnapshot from '../../../src/tree-view/WdioSnapshot';
 import WdioWebviewPanel from '../../../src/webview/WdioWebviewPanel';
 import WorkspaceFolderItem from '../../../src/tree-view/WorkspaceFolder';
+import { replaceReferenceWithLatest } from '../../../src/common/utils';
 import type { UriMap, WdioWebview } from '../../../src/types';
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+jest.mock('lodash/debounce', () => (fn: Function) => fn);
 jest.mock('../../../src/common/ResourceRetriever', () => ({
   getIcon: jest.fn((path) => path),
   getThemedIcon: jest.fn((path) => path),
   getDistFile: jest.fn((path) => path),
   getFont: jest.fn((path) => path),
+}));
+jest.mock('../../../src/common/utils', () => ({
+  ...jest.requireActual('../../../src/common/utils'),
+  replaceReferenceWithLatest: jest.fn(),
 }));
 
 const mockWindow = mocked(window);
@@ -32,11 +39,8 @@ describe('WdioWebviewPanel', () => {
   };
 
   const buildWebviewSnapshot = (snapshot: WdioSnapshot): WdioWebview.Snapshot => {
-    const buildImageData = ({ uri }: UriMap) => ({
-      src: expect.stringContaining(uri.fsPath),
-      fsPath: uri.fsPath,
-      exists: true,
-    });
+    const buildImageData = ({ uri }: UriMap) =>
+      expect.objectContaining({ src: expect.stringContaining(uri.fsPath), exists: true });
 
     return {
       name: snapshot.label,
@@ -54,6 +58,8 @@ describe('WdioWebviewPanel', () => {
     const context = ({ subscriptions: [] } as unknown) as ExtensionContext;
     jest.spyOn(ExtensionState, 'context', 'get').mockReturnValue(context);
     mockWindow.createWebviewPanel.mockClear();
+    mockWindow.showErrorMessage.mockClear();
+    mocked(replaceReferenceWithLatest).mockClear();
     WdioWebviewPanel['openPanels'] = [];
     mockfs({
       '/root/reference/locale/formFactor/spec/snapshot.png': 'content',
@@ -82,7 +88,7 @@ describe('WdioWebviewPanel', () => {
       const snapshot = buildSnapshot();
       WdioWebviewPanel.createOrShow(snapshot);
       const { onDidReceiveMessage, postMessage } = mockWindow.createWebviewPanel.mock.results[0].value.webview;
-      onDidReceiveMessage.mock.calls[0][0]({ ready: true });
+      onDidReceiveMessage.mock.calls[0][0]({ intent: 'webviewReady', ready: true });
       expect(postMessage).toHaveBeenCalledTimes(1);
       expect(postMessage).toHaveBeenCalledWith(
         expect.objectContaining({ snapshotData: buildWebviewSnapshot(snapshot) })
@@ -103,7 +109,7 @@ describe('WdioWebviewPanel', () => {
       const snapshot = buildSnapshot();
       WdioWebviewPanel.createOrShow(snapshot);
       const { onDidReceiveMessage, postMessage } = mockWindow.createWebviewPanel.mock.results[0].value.webview;
-      onDidReceiveMessage.mock.calls[0][0]({ ready: true });
+      onDidReceiveMessage.mock.calls[0][0]({ intent: 'webviewReady', ready: true });
       postMessage.mockClear();
       WdioWebviewPanel.updateAllOpenWebviews();
       expect(postMessage).toHaveBeenCalledTimes(1);
@@ -118,7 +124,7 @@ describe('WdioWebviewPanel', () => {
         onDidChangeViewState,
         webview: { onDidReceiveMessage, postMessage },
       } = mockWindow.createWebviewPanel.mock.results[0].value;
-      onDidReceiveMessage.mock.calls[0][0]({ ready: true });
+      onDidReceiveMessage.mock.calls[0][0]({ intent: 'webviewReady', ready: true });
       onDidChangeViewState.mock.calls[0][0]({ webviewPanel: { visible: false } });
       postMessage.mockClear();
       WdioWebviewPanel.updateAllOpenWebviews();
@@ -128,7 +134,7 @@ describe('WdioWebviewPanel', () => {
     it('should not send a message to update a webview if the webview does not belong to the workspace', () => {
       WdioWebviewPanel.createOrShow(buildSnapshot());
       const { onDidReceiveMessage, postMessage } = mockWindow.createWebviewPanel.mock.results[0].value.webview;
-      onDidReceiveMessage.mock.calls[0][0]({ ready: true });
+      onDidReceiveMessage.mock.calls[0][0]({ intent: 'webviewReady', ready: true });
       postMessage.mockClear();
       WdioWebviewPanel.updateAllOpenWebviews(new WorkspaceFolderItem(Uri.file('/some/other/workspace')));
       expect(postMessage).not.toHaveBeenCalled();
@@ -140,6 +146,46 @@ describe('WdioWebviewPanel', () => {
       mockfs({});
       WdioWebviewPanel.updateAllOpenWebviews();
       expect(dispose).toHaveBeenCalledTimes(1);
+    });
+
+    it('should replace a single reference snapshot with the latest when it receives a replace post message', () => {
+      const snapshot = buildSnapshot();
+      const mockResource = {
+        locale: 'locale2',
+        formFactor: 'formFactor2',
+        reference: { uri: Uri.file('reference-snapshot.png'), exists: false },
+        latest: { uri: Uri.file('latest-snapshot.png'), exists: false },
+        diff: { uri: Uri.file('diff-snapshot.png'), exists: false },
+      };
+      snapshot.addResource(mockResource);
+      WdioWebviewPanel.createOrShow(snapshot);
+      const { onDidReceiveMessage } = mockWindow.createWebviewPanel.mock.results[0].value.webview;
+      onDidReceiveMessage.mock.calls[0][0]({
+        intent: 'replaceReferenceWithLatest',
+        locale: 'locale2',
+        formFactor: 'formFactor2',
+      });
+      expect(replaceReferenceWithLatest).toHaveBeenCalledTimes(1);
+      expect(replaceReferenceWithLatest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          resources: [expect.objectContaining({ locale: 'locale2', formFactor: 'formFactor2' })],
+        })
+      );
+    });
+
+    it("should show an error message when the locale and form factor requested for replacement don't exist", () => {
+      WdioWebviewPanel.createOrShow(buildSnapshot());
+      const { onDidReceiveMessage } = mockWindow.createWebviewPanel.mock.results[0].value.webview;
+      onDidReceiveMessage.mock.calls[0][0]({
+        intent: 'replaceReferenceWithLatest',
+        locale: 'fakeLocale',
+        formFactor: 'fakeFormFactor',
+      });
+      expect(replaceReferenceWithLatest).not.toHaveBeenCalled();
+      expect(mockWindow.showErrorMessage).toHaveBeenCalledTimes(1);
+      expect(mockWindow.showErrorMessage).toHaveBeenCalledWith(
+        'snapshot.png snapshot for locale fakeLocale and form factor fakeFormFactor does not exist.'
+      );
     });
   });
 });

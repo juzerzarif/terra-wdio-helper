@@ -5,7 +5,7 @@
   import SnapshotTab from './SnapshotTab.svelte';
   import SnapshotTabBar from './SnapshotTabBar.svelte';
   import { getContext } from 'svelte';
-  import { vsCodeWritable } from "../vscodeWebviewApi";
+  import { sendWebviewMessage, vsCodeWritable } from "../vscodeWebviewApi";
   import type { WdioWebview } from '../../types';
   import type { TabType } from './SnapshotTabBar.svelte';
   
@@ -17,12 +17,30 @@
   const containerId = `${locale}-${formFactor}`;
   const activeTab = vsCodeWritable<TabType>(`${containerId}-active-tab`, initialTab);
   const tabIds = { reference: `${containerId}-reference`, latest: `${containerId}-latest`, diff: `${containerId}-diff` };
+
+  const handleReplaceReferenceClick = () => {
+    sendWebviewMessage({ intent: 'replaceReferenceWithLatest', locale, formFactor });
+  }
 </script>
 
 <div class=" mb-8 last:mb-0 border-b last:border-b-0" data-snapshot-container>
   <div class="flex mb-2.5 px-2">
     <h2 class="text-2xl font-medium mr-2.5">{resource.locale} | {resource.formFactor}</h2>
     {#if resource.diff.exists} <DiffBadge /> {/if}
+    <button 
+      disabled={!resource.diff.exists} 
+      class="
+        btn
+        border-2 rounded border-current
+        text-sm font-medium
+        active:bg-gray-300 dark:active:bg-opacity-800 active:bg-opacity-30 disabled:active:bg-transparent
+        disabled:cursor-not-allowed disabled:opacity-30"
+      on:click={handleReplaceReferenceClick}
+    >
+      <div class="btn-content rounded px-2 h-full w-full flex items-center" tabindex={-1}>
+        Replace reference with latest
+      </div>
+    </button>
   </div>
   <SnapshotTabBar tabIds={tabIds} bind:activeTab={$activeTab} />
   <div class="p-5 content">
@@ -47,5 +65,17 @@
 
   .content {
     height: 75vh;
+  }
+
+  .btn {
+    margin-left: auto;
+  }
+
+  .btn:focus, .btn-content:focus {
+    outline: none;
+  }
+
+  .btn:focus > .btn-content {
+    @apply ring ring-gray-400 ring-opacity-50 ring-offset-4 ring-offset-transparent;
   }
 </style>

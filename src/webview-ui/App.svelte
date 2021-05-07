@@ -13,7 +13,7 @@
   const syncScroll = createScrollSync();
 
   onMount(() => {
-    sendWebviewMessage({ ready: true })
+    sendWebviewMessage({ intent: 'webviewReady', ready: true });
   })
 
   $: {

@@ -1,7 +1,9 @@
 import { onDestroy } from 'svelte';
 import { writable } from 'svelte/store';
-import type { JsonObject, JsonValue } from 'type-fest';
+import type { JsonValue } from 'type-fest';
 import type { Writable } from 'svelte/store';
+
+import type { WdioWebview } from '../types';
 
 declare global {
   interface Window {
@@ -26,6 +28,6 @@ export const vsCodeWritable = <T extends JsonValue>(key: string, initialValue: T
   return stateStore;
 };
 
-export const sendWebviewMessage = (message: JsonObject | JsonValue): void => {
-  vscode.postMessage(message);
+export const sendWebviewMessage = (message: WdioWebview.Message): void => {
+  vscode.postMessage(message as JsonValue);
 };

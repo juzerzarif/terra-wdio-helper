@@ -26,6 +26,8 @@ describe('SnapshotContainer', () => {
 
   beforeEach(() => {
     mockGetContext.mockReturnValue(extensionConfig);
+    vscode.postMessage.mockClear();
+    vscode.setState.mockClear();
   });
 
   it('should render a tab for each resource', () => {
@@ -103,5 +105,22 @@ describe('SnapshotContainer', () => {
     render(SnapshotContainer, { resource });
     await fireEvent.click(screen.getByRole('tab', { name: 'latest' }));
     expect(vscode.setState).toHaveBeenLastCalledWith({ [`${containerId}-active-tab`]: 'latest' });
+  });
+
+  it('should send a message to replace the reference snapshot with latest when the replace button is clicked', () => {
+    const resource = buildResource({ diff: true });
+    render(SnapshotContainer, { resource });
+    fireEvent.click(screen.getByRole('button', { name: 'Replace reference with latest' }));
+    expect(vscode.postMessage).toHaveBeenCalledTimes(1);
+    expect(vscode.postMessage).toHaveBeenCalledWith({
+      intent: 'replaceReferenceWithLatest',
+      locale: resource.locale,
+      formFactor: resource.formFactor,
+    });
+  });
+
+  it('should render the replace button as disabled when there is no diff snapshot present', () => {
+    render(SnapshotContainer, { resource: buildResource({ diff: false }) });
+    expect(screen.getByRole('button', { name: 'Replace reference with latest' })).toBeDisabled();
   });
 });

@@ -72,7 +72,21 @@ declare namespace WdioWebview {
     extensionConfig: ExtensionConfig;
   }
 
-  declare interface Message {
-    ready?: boolean;
+  declare interface BaseMessage {
+    intent: string;
+    [key: string]: unknown;
   }
+
+  declare interface ReadyMessage extends BaseMessage {
+    intent: 'webviewReady';
+    ready: boolean;
+  }
+
+  declare interface ReplaceMessage extends BaseMessage {
+    intent: 'replaceReferenceWithLatest';
+    locale: string;
+    formFactor: string;
+  }
+
+  declare type Message = ReadyMessage | ReplaceMessage;
 }

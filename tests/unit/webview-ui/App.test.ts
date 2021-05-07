@@ -57,7 +57,7 @@ describe('App', () => {
   it('should send a webview ready message when the app is mounted', () => {
     render(App);
     expect(vscode.postMessage).toHaveBeenCalledTimes(1);
-    expect(vscode.postMessage).toHaveBeenCalledWith({ ready: true });
+    expect(vscode.postMessage).toHaveBeenCalledWith({ intent: 'webviewReady', ready: true });
   });
 
   it('should set the scroll position to the saved vscode state when it exists', async () => {

@@ -37,9 +37,9 @@ describe('vscode webview api', () => {
 
   describe('sendWebviewMessage', () => {
     it('should post a vscode webview message with the provided message', () => {
-      sendWebviewMessage('some message');
+      sendWebviewMessage({ intent: 'webviewReady', ready: true });
       expect(mockVsCodeApi.postMessage).toHaveBeenCalledTimes(1);
-      expect(mockVsCodeApi.postMessage).toHaveBeenCalledWith('some message');
+      expect(mockVsCodeApi.postMessage).toHaveBeenCalledWith({ intent: 'webviewReady', ready: true });
     });
   });
 });
