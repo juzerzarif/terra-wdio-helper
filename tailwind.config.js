@@ -1,6 +1,7 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
+  mode: 'jit',
   darkMode: 'class',
   theme: {
     extend: {
@@ -9,15 +10,5 @@ module.exports = {
       },
     },
   },
-  variants: {
-    extend: {
-      backgroundColor: ['active'],
-      borderWidth: ['last'],
-      margin: ['last'],
-    },
-  },
-  purge: {
-    content: ['./src/webview-ui/**/*.svelte'],
-    enabled: process.env.NODE_ENV !== 'development',
-  },
+  purge: ['./src/webview-ui/**/*.svelte']
 };

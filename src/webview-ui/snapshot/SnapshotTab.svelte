@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NoResource from "../common/NoResource.svelte";
+  import NoResource from '../common/NoResource.svelte';
 
   export let exists = true;
   export let active = true;

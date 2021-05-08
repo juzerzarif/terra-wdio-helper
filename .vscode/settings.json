@@ -9,5 +9,8 @@
     "files.eol": "\n",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": true
+    },
+    "[svelte]": {
+      "editor.defaultFormatter": "svelte.svelte-vscode"
     }
 }

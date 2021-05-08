@@ -1,12 +1,9 @@
 <script lang="ts">
-  import DiffBadge from "./common/DiffBadge.svelte";
-  import SnapshotContainer from "./snapshot/SnapshotContainer.svelte";
-  import TailwindBase from './tailwind/Base.svelte';
-  import TailwindComponents from './tailwind/Components.svelte';
-  import TailwindUtilities from './tailwind/Utilities.svelte';
-  import { onMount, setContext } from "svelte";
-  import { getWebviewData, isCurrentThemeDark, createScrollSync } from "./webviewStateHelpers";
-  import { sendWebviewMessage } from "./vscodeWebviewApi";
+  import DiffBadge from './common/DiffBadge.svelte';
+  import SnapshotContainer from './snapshot/SnapshotContainer.svelte';
+  import { onMount, setContext } from 'svelte';
+  import { getWebviewData, isCurrentThemeDark, createScrollSync } from './webviewStateHelpers';
+  import { sendWebviewMessage } from './vscodeWebviewApi';
 
   const { snapshotData, extensionConfig } = getWebviewData();
   const darkMode = isCurrentThemeDark();
@@ -14,7 +11,7 @@
 
   onMount(() => {
     sendWebviewMessage({ intent: 'webviewReady', ready: true });
-  })
+  });
 
   $: {
     if ($darkMode) {
@@ -24,7 +21,7 @@
     }
   }
 
-  $: diffExists = !!$snapshotData?.resources.some(({diff}) => diff.exists);
+  $: diffExists = !!$snapshotData?.resources.some(({ diff }) => diff.exists);
 
   $: {
     if ($extensionConfig) {
@@ -33,9 +30,6 @@
   }
 </script>
 
-<TailwindBase />
-<TailwindComponents />
-<TailwindUtilities />
 <main class="w-full h-full flex flex-col">
   {#if $snapshotData}
     <div class="flex p-4 shadow space-x-3">
@@ -52,9 +46,14 @@
   {/if}
 </main>
 
-<style global>
-  html, body {
+<style global lang="postcss">
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  html,
+  body {
     height: 100%;
-    width: 100%
+    width: 100%;
   }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { vsCodeWritable } from "../vscodeWebviewApi";
+  import { vsCodeWritable } from '../vscodeWebviewApi';
 
   export let id: string;
   export let reference: string;
@@ -22,16 +22,18 @@
       resizeObserver?.disconnect();
       /**
        * No real value in unit testing resize logic with canned values.
-       * Testing consideration here would be to verify that the assumptions made about 
+       * Testing consideration here would be to verify that the assumptions made about
        * naturalHeight, naturalWidth, and contentRect are correct in a real browser environment.
        */
-      resizeObserver = new ResizeObserver(/* istanbul ignore next */([{ contentRect }]: ResizeObserverEntry[]) => {
-        if (latestImg && sliderBorder) {
-          const { naturalHeight, naturalWidth } = latestImg;
-          const imageHeight = (naturalHeight/naturalWidth) * contentRect.width;
-          sliderBorder.style.setProperty('--thumb-height', `${imageHeight}px`);
+      resizeObserver = new ResizeObserver(
+        /* istanbul ignore next */ ([{ contentRect }]: ResizeObserverEntry[]) => {
+          if (latestImg && sliderBorder) {
+            const { naturalHeight, naturalWidth } = latestImg;
+            const imageHeight = (naturalHeight / naturalWidth) * contentRect.width;
+            sliderBorder.style.setProperty('--thumb-height', `${imageHeight}px`);
+          }
         }
-      });
+      );
 
       resizeObserver.observe(latestImg);
     }
@@ -44,17 +46,17 @@
   </div>
   <div class="absolute h-full flex">
     <img class="object-contain max-h-full" src={latest} alt="Latest snapshot" bind:this={latestImg} />
-    <input 
-      class="slider-border absolute w-full h-0 top-1/2 appearance-none bg-transparent focus:outline-none" 
-      type="range" 
+    <input
+      class="slider-border absolute w-full h-0 top-1/2 appearance-none bg-transparent focus:outline-none"
+      type="range"
       min={0}
       max={100}
       value={$compareSliderValue}
       bind:this={sliderBorder}
       disabled
     />
-    <input 
-      class="compare-slider absolute w-full appearance-none focus:outline-none h-0"
+    <input
+      class="compare-slider top-[50%] absolute w-full appearance-none focus:outline-none h-0"
       type="range"
       aria-label="Snapshot comparison slider"
       min={0}
@@ -67,7 +69,6 @@
 <style lang="postcss">
   .compare-slider {
     width: calc(100% + 40px);
-    top: 50%;
     left: -20px;
     clip-path: inset(-20px 20px);
   }
