@@ -157,7 +157,7 @@ describe('WdioWebviewPanel', () => {
         latest: { uri: Uri.file('latest-snapshot.png'), exists: false },
         diff: { uri: Uri.file('diff-snapshot.png'), exists: false },
       };
-      snapshot.addResource(mockResource);
+      snapshot.resources.push(mockResource);
       WdioWebviewPanel.createOrShow(snapshot);
       const { onDidReceiveMessage } = mockWindow.createWebviewPanel.mock.results[0].value.webview;
       onDidReceiveMessage.mock.calls[0][0]({
@@ -166,11 +166,13 @@ describe('WdioWebviewPanel', () => {
         formFactor: 'formFactor2',
       });
       expect(replaceReferenceWithLatest).toHaveBeenCalledTimes(1);
-      expect(replaceReferenceWithLatest).toHaveBeenCalledWith(
-        expect.objectContaining({
-          resources: [expect.objectContaining({ locale: 'locale2', formFactor: 'formFactor2' })],
-        })
-      );
+      const receivedSnapshot = mocked(replaceReferenceWithLatest).mock.calls[0][0];
+      expect(receivedSnapshot.resources).toHaveLength(1);
+      expect(receivedSnapshot.resources[0].locale).toEqual(mockResource.locale);
+      expect(receivedSnapshot.resources[0].formFactor).toEqual(mockResource.formFactor);
+      expect(receivedSnapshot.resources[0].reference.uri.path).toEqual(mockResource.reference.uri.path);
+      expect(receivedSnapshot.resources[0].latest.uri.path).toEqual(mockResource.latest.uri.path);
+      expect(receivedSnapshot.resources[0].diff.uri.path).toEqual(mockResource.diff.uri.path);
     });
 
     it("should show an error message when the locale and form factor requested for replacement don't exist", () => {

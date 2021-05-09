@@ -1,5 +1,5 @@
 import * as svelte from 'svelte';
-import { fireEvent, render, screen, within } from '@testing-library/svelte';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/svelte';
 import { mocked } from 'ts-jest/utils';
 
 import SnapshotContainer from '../../../../src/webview-ui/snapshot/SnapshotContainer.svelte';
@@ -117,6 +117,19 @@ describe('SnapshotContainer', () => {
       locale: resource.locale,
       formFactor: resource.formFactor,
     });
+  });
+
+  it('should disable the replace reference with latest button for a second after it is clicked', async () => {
+    const resource = buildResource({ diff: true });
+    jest.useFakeTimers();
+    render(SnapshotContainer, { resource });
+    await fireEvent.click(screen.getByRole('button', { name: 'Replace reference with latest' }));
+    expect(screen.getByRole('button', { name: 'Replace reference with latest' })).toBeDisabled();
+    jest.runTimersToTime(1000);
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Replace reference with latest' })).not.toBeDisabled()
+    );
+    jest.useRealTimers();
   });
 
   it('should render the replace button as disabled when there is no diff snapshot present', () => {

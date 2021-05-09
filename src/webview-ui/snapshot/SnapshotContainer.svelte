@@ -21,9 +21,18 @@
     latest: `${containerId}-latest`,
     diff: `${containerId}-diff`,
   };
+  let replaceButtonDisabled = false;
 
   const handleReplaceReferenceClick = () => {
     sendWebviewMessage({ intent: 'replaceReferenceWithLatest', locale, formFactor });
+    /**
+     * We're just gonna disable the button for a second cause there's no decent way to know when the operation is done
+     * and either way re-requesting the action doesn't really do anything bad.
+     */
+    replaceButtonDisabled = true;
+    setTimeout(() => {
+      replaceButtonDisabled = false;
+    }, 1000);
   };
 </script>
 
@@ -32,7 +41,7 @@
     <h2 class="text-2xl font-medium mr-2.5">{resource.locale} | {resource.formFactor}</h2>
     {#if resource.diff.exists} <DiffBadge /> {/if}
     <button
-      disabled={!resource.diff.exists}
+      disabled={!resource.diff.exists || replaceButtonDisabled}
       class="
         btn ml-auto focus:outline-none
         border-2 rounded border-current

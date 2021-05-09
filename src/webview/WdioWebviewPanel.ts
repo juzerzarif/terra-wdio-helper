@@ -211,7 +211,7 @@ class WdioWebviewPanel {
       return;
     }
     const singleResourceSnapshot = new WdioSnapshot(this.webviewSnapshot.name, 'dummyParentId');
-    singleResourceSnapshot.addResource(resourceToUpdate);
+    singleResourceSnapshot.resources = [resourceToUpdate];
     replaceReferenceWithLatest(singleResourceSnapshot);
   }
 }
