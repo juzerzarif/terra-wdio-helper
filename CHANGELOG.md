@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.7.0
+### Features
+- Added "Replace reference with latest" button in webview for individual snapshots so you can swap snapshots right after reviewing them without switching context
+- 🛠 Webview is using tailwind's JIT mode for generating styles resulting in much faster builds 🚀
+
 ## 0.6.2
 ### Bug fixes
 - Font for "Resource Does Not Exist" text on no resource view doesn't pop in on first reveal

@@ -3,7 +3,7 @@
   "displayName": "Terra WDIO Helper",
   "description": "A tool to help analyze Terra WDIO test results",
   "icon": "resources/images/extension_icon.png",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "publisher": "juzerzarif",
   "license": "SEE LICENSE IN LICENSE.txt",
   "repository": {

@@ -10,5 +10,5 @@ module.exports = {
       },
     },
   },
-  purge: ['./src/webview-ui/**/*.svelte']
+  purge: ['./src/webview-ui/**/*.svelte'],
 };
