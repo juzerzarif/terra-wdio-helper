@@ -209,7 +209,7 @@
     "mocha": "^6.2.2",
     "mock-fs": "^4.13.0",
     "mutationobserver-shim": "^0.3.7",
-    "postcss": "^8.2.7",
+    "postcss": "^8.2.10",
     "postcss-loader": "^5.1.0",
     "postcss-nested": "^5.0.5",
     "prettier": "^2.2.1",
