@@ -3,7 +3,7 @@ name: Publish extension
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
@@ -28,7 +28,7 @@ jobs:
         with:
           tag_name: ${{ env.TAG_NAME }}
           release_name: ${{ env.TAG_NAME }}
-          body: See [CHANGELOG](https://github.com/juzerzarif/terra-wdio-helper/blob/master/CHANGELOG.md) for changes
+          body: See [CHANGELOG](https://github.com/juzerzarif/terra-wdio-helper/blob/main/CHANGELOG.md) for changes
 
   publish:
     name: Publish VSCode Extension
