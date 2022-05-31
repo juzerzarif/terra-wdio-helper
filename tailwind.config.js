@@ -1,14 +1,13 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  mode: 'jit',
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        lightBlue: colors.lightBlue,
+        lightBlue: colors.sky,
       },
     },
   },
-  purge: ['./src/webview-ui/**/*.svelte'],
+  content: ['./src/webview-ui/**/*.svelte'],
 };

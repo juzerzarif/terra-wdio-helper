@@ -59,7 +59,7 @@ module.exports = (env, argv) => {
       ],
     },
     devServer: {
-      contentBase: 'webview-test',
+      static: { directory: path.join(__dirname, 'webview-test') },
     },
   };
 };
