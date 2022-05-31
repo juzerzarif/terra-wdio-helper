@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.80
+- Dev dependency updates to patch security vulnerabilities
+
 ## 0.7.0
 ### Features
 - Added "Replace reference with latest" button in webview for individual snapshots so you can swap snapshots right after reviewing them without switching context
